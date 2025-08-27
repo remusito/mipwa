@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Herramientas de Instalación - Semáforo App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        .tool-card {
+            background: rgba(255,255,255,0.1);
+            margin: 20px 0;
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 4px solid #00ff00;
+            transition: all 0.3s;
+        }
+        .tool-card:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+        .tool-card.primary {
+            border-left-color: #00ff00;
+            background: rgba(0,255,0,0.1);
+        }
+        .tool-card.diagnostic {
+            border-left-color: #ffa500;
+            background: rgba(255,165,0,0.1);
+        }
+        .tool-card.guide {
+            border-left-color: #00bfff;
+            background: rgba(0,191,255,0.1);
+        }
+        button {
+            background: #00ff00;
+            color: black;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px 10px 10px 0;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        button:hover {
+            background: #00cc00;
+            transform: translateY(-2px);
+        }
+        .button-secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        .button-secondary:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .status.recommended { background: #00ff00; color: black; }
+        .status.diagnostic { background: #ffa500; color: black; }
+        .status.alternative { background: #00bfff; color: black; }
+        .features {
+            list-style: none;
+            padding: 0;
+        }
+        .features li {
+            padding: 5px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+        .features li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #00ff00;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛠️ Herramientas de Instalación PWA</h1>
+        <p>Conjunto completo de herramientas para diagnosticar e instalar la aplicación Semáforo como PWA.</p>
+
+        <div class="tool-card primary">
+            <h2>🎯 Aplicación Principal <span class="status recommended">PRINCIPAL</span></h2>
+            <p>La aplicación principal del semáforo. Úsala para interactuar y activar la detección de instalación.</p>
+            <ul class="features">
+                <li>Semáforo funcional con sonidos</li>
+                <li>Modo oscuro y configuraciones</li>
+                <li>Detección automática de instalación</li>
+                <li>Funciona offline una vez instalada</li>
+            </ul>
+            <button onclick="window.open('./index.html', '_blank')">🚀 Abrir App Principal</button>
+        </div>
+
+        <div class="tool-card guide">
+            <h2>📱 Guía para Chrome Android <span class="status recommended">RECOMENDADO</span></h2>
+            <p>Guía específica y optimizada para instalar la PWA en dispositivos Android usando Chrome.</p>
+            <ul class="features">
+                <li>Instrucciones paso a paso</li>
+                <li>Detección automática del navegador</li>
+                <li>Advertencias sobre navegadores no compatibles</li>
+                <li>Métodos alternativos de instalación</li>
+            </ul>
+            <button onclick="window.open('./chrome-install.html', '_blank')">📱 Ver Guía Chrome</button>
+        </div>
+
+        <div class="tool-card diagnostic">
+            <h2>🔍 Diagnóstico Completo <span class="status diagnostic">DIAGNÓSTICO</span></h2>
+            <p>Herramienta avanzada de diagnóstico que verifica todos los aspectos de la PWA.</p>
+            <ul class="features">
+                <li>Verificación completa de PWA</li>
+                <li>Detección de problemas específicos</li>
+                <li>Información técnica detallada</li>
+                <li>Recomendaciones de solución</li>
+            </ul>
+            <button onclick="window.open('./diagnostico-completo.html', '_blank')">🔍 Diagnóstico Completo</button>
+            <button class="button-secondary" onclick="window.open('./diagnostico-pwa.html', '_blank')">🔧 Diagnóstico Simple</button>
+        </div>
+
+        <div class="tool-card guide">
+            <h2>📋 Guía Android Interactiva <span class="status alternative">ALTERNATIVA</span></h2>
+            <p>Guía interactiva original con detección en tiempo real del estado de instalación.</p>
+            <ul class="features">
+                <li>Detección en tiempo real</li>
+                <li>Interfaz interactiva</li>
+                <li>Contador de progreso</li>
+                <li>Feedback visual</li>
+            </ul>
+            <button onclick="window.open('./guia-android.html', '_blank')">📋 Guía Interactiva</button>
+        </div>
+
+        <div class="tool-card diagnostic">
+            <h2>🧪 Test de Instalación <span class="status diagnostic">TEST</span></h2>
+            <p>Herramienta simple para probar la funcionalidad de instalación.</p>
+            <ul class="features">
+                <li>Test básico de instalación</li>
+                <li>Verificación de eventos</li>
+                <li>Botón de instalación manual</li>
+                <li>Log de eventos</li>
+            </ul>
+            <button onclick="window.open('./test-install.html', '_blank')">🧪 Test de Instalación</button>
+        </div>
+
+        <div class="tool-card">
+            <h2>📖 Documentación <span class="status alternative">INFO</span></h2>
+            <p>Documentación completa y guías de instalación en formato texto.</p>
+            <ul class="features">
+                <li>Guía completa de instalación</li>
+                <li>Solución de problemas</li>
+                <li>Información técnica</li>
+                <li>Requisitos del sistema</li>
+            </ul>
+            <button onclick="window.open('./INSTALACION.md', '_blank')">📖 Ver Documentación</button>
+            <button class="button-secondary" onclick="window.open('./README.md', '_blank')">📄 README</button>
+        </div>
+
+        <div class="tool-card">
+            <h2>🔧 Recomendaciones de Uso</h2>
+            <div style="background: rgba(0,0,0,0.2); padding: 20px; border-radius: 10px; margin-top: 15px;">
+                <h3>📱 Para Android:</h3>
+                <ol>
+                    <li><strong>Usa Chrome</strong> (no Brave, Firefox, etc.)</li>
+                    <li><strong>Abre la app principal</strong> e interactúa con ella</li>
+                    <li><strong>Espera 30-60 segundos</strong> para la detección</li>
+                    <li><strong>Si no funciona</strong>, usa la guía específica para Chrome</li>
+                </ol>
+                
+                <h3>🔍 Para diagnóstico:</h3>
+                <ol>
+                    <li><strong>Usa el diagnóstico completo</strong> para problemas técnicos</li>
+                    <li><strong>Verifica el navegador</strong> antes de intentar instalar</li>
+                    <li><strong>Revisa la conexión</strong> y el contexto seguro</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mostrar información del contexto actual
+        console.log('Herramientas PWA cargadas');
+        console.log('Navegador:', navigator.userAgent);
+        console.log('Contexto seguro:', location.protocol === 'https:' || location.hostname === 'localhost');
+        console.log('Service Worker soportado:', 'serviceWorker' in navigator);
+        console.log('Modo standalone:', window.matchMedia('(display-mode: standalone)').matches);
+    </script>
+</body>
+</html>

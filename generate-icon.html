@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generador de Iconos</title>
+</head>
+<body>
+    <script>
+        function generateIcon(size) {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            
+            // Fondo azul
+            ctx.fillStyle = '#667eea';
+            ctx.fillRect(0, 0, size, size);
+            
+            // Círculos del semáforo
+            const centerX = size / 2;
+            const circleRadius = size * 0.08;
+            const spacing = size * 0.12;
+            
+            // Rojo
+            ctx.fillStyle = '#ff0000';
+            ctx.beginPath();
+            ctx.arc(centerX, centerX - spacing, circleRadius, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Amarillo
+            ctx.fillStyle = '#ffff00';
+            ctx.beginPath();
+            ctx.arc(centerX, centerX, circleRadius, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Verde
+            ctx.fillStyle = '#00ff00';
+            ctx.beginPath();
+            ctx.arc(centerX, centerX + spacing, circleRadius, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            return canvas.toDataURL('image/png');
+        }
+        
+        // Generar iconos
+        const icon192 = generateIcon(192);
+        const icon512 = generateIcon(512);
+        
+        // Crear enlaces de descarga
+        const link192 = document.createElement('a');
+        link192.href = icon192;
+        link192.download = 'icon-192.png';
+        link192.click();
+        
+        setTimeout(() => {
+            const link512 = document.createElement('a');
+            link512.href = icon512;
+            link512.download = 'icon-512.png';
+            link512.click();
+        }, 500);
+        
+        document.body.innerHTML = '<h1>Iconos generados y descargados</h1><p>Revisa tu carpeta de descargas</p>';
+    </script>
+</body>
+</html>
