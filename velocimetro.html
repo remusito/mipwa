@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Velocímetro GPS - Semáforo App</title>
+    <link rel="stylesheet" href="styles.css">
     <style>
         * {
             margin: 0;
@@ -59,17 +60,27 @@
             width: 300px;
             height: 300px;
             margin: 0 auto 30px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 50%;
-            border: 8px solid rgba(255,255,255,0.3);
             display: flex;
             align-items: center;
             justify-content: center;
-            backdrop-filter: blur(10px);
+        }
+
+        .speedometer-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #needle {
+            transition: transform 0.5s ease-in-out;
+            transform-origin: 150px 150px;
         }
 
         .speed-display {
             text-align: center;
+            z-index: 1;
         }
 
         .speed-value {
@@ -142,22 +153,6 @@
             justify-content: center;
         }
 
-        .btn {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 25px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .btn:hover {
-            background: rgba(255,255,255,0.3);
-            transform: translateY(-2px);
-        }
-
         .btn.primary {
             background: #00ff00;
             color: black;
@@ -218,6 +213,16 @@
         <h1 class="title">🚗 Velocímetro GPS</h1>
         
         <div class="speedometer">
+            <svg class="speedometer-svg" width="300" height="300" viewBox="0 0 300 300">
+                <defs>
+                    <linearGradient id="speedo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:rgba(255,255,255,0.3);stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:rgba(255,255,255,0.1);stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <circle cx="150" cy="150" r="140" fill="rgba(255,255,255,0.1)" stroke="url(#speedo-gradient)" stroke-width="8"/>
+                <path id="needle" d="M 150 150 L 150 30" stroke="red" stroke-width="4" stroke-linecap="round" />
+            </svg>
             <div class="speed-display">
                 <div class="speed-value" id="speedValue">0</div>
                 <div class="speed-unit">km/h</div>
@@ -276,6 +281,16 @@
         const statusEl = document.getElementById('status');
         const accuracyEl = document.getElementById('accuracyIndicator');
         const startBtn = document.getElementById('startBtn');
+        const needle = document.getElementById('needle');
+
+        function updateNeedle(speed) {
+            const maxSpeedDisplay = 200;
+            const maxRotation = 270; // from -135 to 135
+            let rotation = (speed / maxSpeedDisplay) * maxRotation - 135;
+            if (rotation < -135) rotation = -135;
+            if (rotation > 135) rotation = 135;
+            needle.style.transform = `rotate(${rotation}deg)`;
+        }
 
         async function startTracking() {
             if (!navigator.geolocation) {
@@ -288,7 +303,6 @@
                 return;
             }
 
-            // Primero verificar permisos
             try {
                 if ('permissions' in navigator) {
                     const permission = await navigator.permissions.query({name: 'geolocation'});
@@ -310,10 +324,8 @@
                 maximumAge: 2000
             };
 
-            // Primero hacer una petición única para solicitar permisos
             navigator.geolocation.getCurrentPosition(
                 (position) => {
-                    // Si funciona, iniciar el seguimiento continuo
                     showStatus('🔍 GPS conectado, iniciando seguimiento...', 'warning');
                     
                     watchId = navigator.geolocation.watchPosition(
@@ -351,50 +363,42 @@
         function onPositionSuccess(position) {
             const { latitude, longitude, accuracy, speed } = position.coords;
             
-            // Actualizar indicador de precisión
             updateAccuracyIndicator(accuracy);
             
-            // Calcular velocidad (speed viene en m/s, convertir a km/h)
             let currentSpeed = 0;
             if (speed !== null && speed >= 0) {
-                currentSpeed = speed * 3.6; // m/s a km/h
+                currentSpeed = speed * 3.6;
             } else if (lastPosition) {
-                // Calcular velocidad basada en distancia y tiempo
                 const distance = calculateDistance(
                     lastPosition.latitude, lastPosition.longitude,
                     latitude, longitude
                 );
-                const timeDiff = (Date.now() - lastPosition.timestamp) / 1000; // segundos
+                const timeDiff = (Date.now() - lastPosition.timestamp) / 1000;
                 if (timeDiff > 0) {
-                    currentSpeed = (distance / timeDiff) * 3.6; // m/s a km/h
+                    currentSpeed = (distance / timeDiff) * 3.6;
                 }
             }
 
-            // Filtrar velocidades irreales (más de 200 km/h probablemente es error GPS)
             if (currentSpeed > 200) {
                 currentSpeed = speedReadings.length > 0 ? speedReadings[speedReadings.length - 1] : 0;
             }
 
-            // Actualizar velocidad actual
             speedValue.textContent = Math.round(currentSpeed);
+            updateNeedle(currentSpeed);
             
-            // Actualizar velocidad máxima
             if (currentSpeed > maxSpeed) {
                 maxSpeed = currentSpeed;
                 maxSpeedEl.textContent = Math.round(maxSpeed) + ' km/h';
             }
 
-            // Agregar a lecturas para promedio
             speedReadings.push(currentSpeed);
             if (speedReadings.length > 10) {
-                speedReadings.shift(); // Mantener solo las últimas 10 lecturas
+                speedReadings.shift();
             }
 
-            // Calcular velocidad media
             const avgSpeed = speedReadings.reduce((a, b) => a + b, 0) / speedReadings.length;
             avgSpeedEl.textContent = Math.round(avgSpeed) + ' km/h';
 
-            // Calcular distancia total
             if (lastPosition) {
                 const distance = calculateDistance(
                     lastPosition.latitude, lastPosition.longitude,
@@ -404,7 +408,6 @@
                 distanceEl.textContent = (totalDistance / 1000).toFixed(2) + ' km';
             }
 
-            // Actualizar tiempo transcurrido
             if (startTime) {
                 const elapsed = Math.floor((Date.now() - startTime) / 1000);
                 const minutes = Math.floor(elapsed / 60);
@@ -412,7 +415,6 @@
                 timeEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
             }
 
-            // Guardar posición actual
             lastPosition = {
                 latitude,
                 longitude,
@@ -502,20 +504,16 @@ Si no aparece:
             accuracyEl.textContent = 'GPS: Permiso denegado';
             accuracyEl.className = 'accuracy-indicator poor';
             
-            // Mostrar botón de reintentar
             document.getElementById('retryBtn').style.display = 'inline-block';
         }
 
         function retryPermissions() {
-            // Ocultar botón de reintentar
             document.getElementById('retryBtn').style.display = 'none';
             
-            // Reiniciar estado
             showStatus('🔄 Reintentando acceso al GPS...', 'warning');
             accuracyEl.textContent = 'GPS: Reintentando';
             accuracyEl.className = 'accuracy-indicator';
             
-            // Intentar de nuevo
             setTimeout(startTracking, 500);
         }
 
@@ -539,14 +537,14 @@ Si no aparece:
         }
 
         function calculateDistance(lat1, lon1, lat2, lon2) {
-            const R = 6371000; // Radio de la Tierra en metros
+            const R = 6371000;
             const dLat = (lat2 - lat1) * Math.PI / 180;
             const dLon = (lon2 - lon1) * Math.PI / 180;
             const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
                     Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
                     Math.sin(dLon/2) * Math.sin(dLon/2);
             const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-            return R * c; // Distancia en metros
+            return R * c;
         }
 
         function showStatus(message, type = '') {
@@ -557,8 +555,8 @@ Si no aparece:
         function resetTracking() {
             stopTracking();
             
-            // Reiniciar todos los valores
             speedValue.textContent = '0';
+            updateNeedle(0);
             maxSpeed = 0;
             maxSpeedEl.textContent = '0 km/h';
             avgSpeedEl.textContent = '0 km/h';
@@ -575,7 +573,6 @@ Si no aparece:
             accuracyEl.className = 'accuracy-indicator';
         }
 
-        // Prevenir que la pantalla se apague durante el seguimiento
         let wakeLock = null;
 
         async function requestWakeLock() {
@@ -597,7 +594,6 @@ Si no aparece:
             }
         }
 
-        // Activar wake lock al iniciar seguimiento
         const originalStartTracking = startTracking;
         startTracking = function() {
             originalStartTracking();
@@ -606,14 +602,12 @@ Si no aparece:
             }
         };
 
-        // Liberar wake lock al parar
         const originalStopTracking = stopTracking;
         stopTracking = function() {
             originalStopTracking();
             releaseWakeLock();
         };
 
-        // Liberar wake lock al cerrar la página
         window.addEventListener('beforeunload', releaseWakeLock);
     </script>
 </body>

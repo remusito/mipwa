@@ -1,161 +1,160 @@
-# 🚦 Semáforo App - PWA Profesional
+# 🚛 Tacógrafo App - Regla del Minuto
 
-Una aplicación web progresiva (PWA) que simula un semáforo profesional con contador de precisión, sonidos y modo oscuro.
+## 📱 Aplicación PWA para Conductores Profesionales
 
-## ✨ Características Principales
+**Tacógrafo App** es una aplicación web progresiva (PWA) diseñada específicamente para conductores profesionales que necesitan cumplir con la **regla del minuto del tacógrafo**. Esta regla es fundamental para el cumplimiento de la normativa de tiempos de conducción y descanso en el transporte por carretera.
 
-### 🚦 Funcionalidad del Semáforo
-- **Contador preciso** en formato SS.CC (segundos.centésimas)
-- **Secuencia realista:** Ámbar (30s) → Verde (55s) → Ámbar parpadeando (60s) → Rojo (65s)
-- **Mensajes claros:** "ESPERE", "ADELANTE", "PARA"
-- **Bucle infinito** automático después del primer ciclo
-- **Sonidos diferenciados** para cada cambio de estado
-- **Sonido de aviso** durante los 5 segundos de ámbar parpadeando
+## 🎯 ¿Qué es la Regla del Minuto?
 
-### 🎨 Interfaz y Diseño
-- **Modo oscuro/claro** con persistencia en localStorage
-- **Panel de ajustes** deslizable con glassmorphism
-- **Animaciones suaves** y transiciones profesionales
-- **Responsive design** para todos los dispositivos
-- **Iconos personalizados** en alta resolución
+La **regla del minuto** es una normativa que establece que los conductores profesionales deben respetar estrictamente los tiempos de conducción y descanso. Esta app simula un semáforo que ayuda a los conductores a:
 
-### 📱 Características PWA
-- **Instalación nativa** en Android e iOS
-- **Funciona offline** después de la primera carga
-- **Pantalla completa** sin barras del navegador
-- **Mantiene pantalla encendida** durante uso
-- **Service Worker** para cache inteligente
+- **Controlar tiempos de conducción** de manera visual y auditiva
+- **Respetar períodos de descanso** obligatorios
+- **Cumplir con la normativa** del tacógrafo digital
+- **Evitar sanciones** por incumplimiento de tiempos
 
-## 🚀 Instalación Rápida
+## 🚦 Funcionamiento de la App
 
-### Para Windows:
-1. Ejecuta `iniciar-servidor.bat`
-2. Sigue las instrucciones en pantalla
+### Secuencia del Semáforo:
 
-### Para Mac/Linux:
-1. Ejecuta `./iniciar-servidor.sh`
-2. Sigue las instrucciones en pantalla
+1. **🟡 Amarillo (ESPERE)**: 30 segundos iniciales - Tiempo de preparación
+2. **🟢 Verde (ADELANTE)**: 50 segundos - Tiempo de conducción activa
+3. **🟡 Amarillo (ESPERE)**: 10 segundos - Aviso de cambio
+4. **🔴 Rojo (DETENGASE)**: 60 segundos - Tiempo de descanso obligatorio
+5. **🔄 Bucle infinito**: Se repite la secuencia verde → amarillo → rojo
 
-### Manual:
-1. **Generar iconos:**
-   ```bash
-   # Abre create-icons.html y descarga todos los iconos
-   ```
+### Características Técnicas:
 
-2. **Iniciar servidor:**
-   ```bash
-   python server.py
-   ```
+- **Contador preciso**: Muestra el tiempo en formato MM.SS
+- **Reinicio automático**: El contador se reinicia en cada cambio de color
+- **Sonidos de aviso**: Diferentes tonos para cada cambio de estado
+- **Parpadeo visual**: El amarillo parpadea para mayor visibilidad
+- **Sin sonido inicial**: Los primeros 30 segundos son silenciosos
 
-3. **Instalar en móvil:**
-   - Conecta móvil a la misma WiFi
-   - Abre Chrome en Android
-   - Ve a `http://[IP-DE-TU-PC]:8080`
-   - Menú → "Instalar app"
+## ⚙️ Cómo Funciona la App
 
-## 📱 Instalación Detallada
+### Sistema de Estados:
 
-Ver **[INSTALACION.md](INSTALACION.md)** para instrucciones completas paso a paso.
+La app utiliza un sistema de estados inteligente que controla automáticamente la secuencia del semáforo:
 
-## 🎮 Uso de la Aplicación
+1. **Estado Inicial**: Amarillo parpadeante (30 segundos)
+   - El contador comienza en 00.00
+   - No hay sonido de tick durante este período
+   - Mensaje: "ESPERE"
 
-### Controles Principales:
-- **INICIAR/PARAR**: Controla el ciclo del semáforo
-- **⚙️ Ajustes**: Accede al panel de configuración
-- **🌙 Modo Oscuro**: Cambia entre tema claro y oscuro
+2. **Estado de Conducción**: Verde (50 segundos)
+   - El contador se reinicia a 00.00
+   - Sonido de confirmación al cambiar a verde
+   - Mensaje: "ADELANTE"
 
-### Secuencia de Funcionamiento:
-1. **Primer ciclo:** Ámbar (30s) → Verde (25s) → Ámbar parpadeando (5s) → Rojo (5s)
-2. **Bucle infinito:** Verde (55s) → Ámbar parpadeando (5s) → Rojo (5s) → Repetir
+3. **Estado de Aviso**: Amarillo parpadeante (10 segundos)
+   - El contador se reinicia a 00.00
+   - Sonido de tick cada segundo durante el parpadeo
+   - Mensaje: "ESPERE"
 
-### Sonidos:
-- **Cambio de color**: Tonos diferenciados (grave para verde/rojo, agudo para ámbar)
-- **Aviso de cambio**: Tick cada segundo durante ámbar parpadeando
-- **Sin ruido**: Silencioso durante verde y rojo fijos
+4. **Estado de Descanso**: Rojo (60 segundos)
+   - El contador se reinicia a 00.00
+   - Sonido de alerta al cambiar a rojo
+   - Mensaje: "DETENGASE"
 
-## 📁 Estructura del Proyecto
+5. **Bucle Automático**: Vuelve al estado verde y se repite indefinidamente
 
-```
-semaforo-app/
-├── 📄 index.html              # Página principal
-├── 🎨 styles.css              # Estilos y animaciones
-├── ⚙️ script.js               # Lógica de la aplicación
-├── 📱 manifest.json           # Configuración PWA
-├── 🔧 sw.js                   # Service Worker
-├── 🖥️ server.py               # Servidor local mejorado
-├── 🎯 create-icons.html       # Generador de iconos
-├── 📋 INSTALACION.md          # Guía detallada
-├── 🪟 iniciar-servidor.bat    # Script Windows
-├── 🐧 iniciar-servidor.sh     # Script Mac/Linux
-└── 🖼️ [iconos].png            # Iconos generados
-```
+### Lógica de Control:
 
-## 🔧 Requisitos Técnicos
+- **Contador Preciso**: Actualizado cada 10 milisegundos (centésimas de segundo)
+- **Reinicio Automático**: En cada cambio de estado, el contador vuelve a 00.00
+- **Verificación de Estados**: Cada cambio solo ocurre cuando el círculo está en el color correcto
+- **Sincronización**: Los sonidos y cambios visuales están perfectamente sincronizados
 
-- **Python 3.6+** (para servidor local)
-- **Navegador moderno** con soporte PWA
-- **Chrome/Edge** recomendado para Android
-- **Safari** para iOS
-- **Conexión WiFi** (solo para instalación inicial)
+### Características del Sonido:
 
-## 🌐 Despliegue Online
+- **Verde**: Tono medio (600Hz) - Confirmación de conducción
+- **Amarillo**: Tono alto (1000Hz) - Aviso de cambio
+- **Rojo**: Tono bajo (400Hz) - Alerta de descanso obligatorio
+- **Tick**: Tono agudo (1200Hz) - Durante parpadeo del amarillo
 
-### Opciones gratuitas:
-- **GitHub Pages**: Sube a repositorio y activa Pages
-- **Netlify**: Arrastra carpeta a netlify.com
-- **Vercel**: Deploy automático desde GitHub
+## 📱 Características PWA
 
-## 🛠️ Desarrollo
+- **Instalable**: Se puede instalar como app nativa en móviles y tablets
+- **Funciona offline**: Funciona sin conexión a internet
+- **Responsive**: Se adapta a cualquier tamaño de pantalla
+- **Actualizaciones automáticas**: Se actualiza automáticamente
+- **Compatibilidad**: Funciona en todos los navegadores modernos
 
-### Tecnologías utilizadas:
-- **HTML5** con semántica moderna
-- **CSS3** con Flexbox y Grid
-- **JavaScript ES6+** con clases
-- **Web Audio API** para sonidos
-- **Service Workers** para PWA
-- **LocalStorage** para persistencia
+## 🎮 Cómo Usar
 
-### Características técnicas:
-- **Glassmorphism** en elementos UI
-- **Backdrop filters** para efectos de desenfoque
-- **CSS Custom Properties** para temas
-- **Intersection Observer** para optimización
-- **Wake Lock API** para mantener pantalla activa
+1. **Abrir la app** en tu navegador móvil o desktop
+2. **Pulsar "INICIAR"** para comenzar el ciclo del semáforo
+3. **Observar el color** del círculo y el contador
+4. **Seguir las indicaciones**:
+   - 🟢 **Verde**: Puedes conducir
+   - 🟡 **Amarillo**: Prepárate para parar
+   - 🔴 **Rojo**: Debes detenerte y descansar
+5. **Pulsar "PARAR"** para detener el ciclo en cualquier momento
 
-## 📊 Compatibilidad
+## 📋 Aplicaciones en el Transporte
 
-| Característica | Chrome | Firefox | Safari | Edge |
-|---------------|--------|---------|--------|------|
-| PWA Install   | ✅     | ⚠️      | ✅     | ✅   |
-| Service Worker| ✅     | ✅      | ✅     | ✅   |
-| Web Audio     | ✅     | ✅      | ✅     | ✅   |
-| Wake Lock     | ✅     | ❌      | ❌     | ✅   |
+### Para Conductores:
+- **Control de tiempos de conducción**
+- **Respeto de períodos de descanso**
+- **Cumplimiento de normativas del tacógrafo**
+- **Prevención de fatiga al volante**
 
-## 🆘 Soporte y Problemas
+### Para Empresas de Transporte:
+- **Formación de conductores**
+- **Cumplimiento normativo**
+- **Reducción de sanciones**
+- **Mejora de la seguridad vial**
 
-### Problemas comunes:
-- **No se conecta**: Verifica misma red WiFi
-- **No instala**: Usa Chrome en Android
-- **Sin sonido**: Interactúa primero con la página
-- **No offline**: Espera primera carga completa
+## 🔧 Instalación
 
-### Logs y debugging:
-- Abre DevTools (F12) para ver errores
-- Verifica Service Worker en Application tab
-- Revisa Network tab para recursos faltantes
+### En Móvil/Tablet:
+1. Abrir la app en el navegador
+2. Pulsar "Instalar" cuando aparezca la notificación
+3. La app se instalará en tu pantalla de inicio
+
+### En Desktop:
+1. Abrir la app en el navegador
+2. Pulsar el icono de instalación en la barra de direcciones
+3. Confirmar la instalación
+
+## 📊 Normativa Relacionada
+
+Esta app está diseñada para ayudar al cumplimiento de:
+- **Reglamento (CE) 561/2006** sobre tiempos de conducción y descanso
+- **Directiva 2002/15/CE** sobre tiempos de trabajo
+- **Reglamento (UE) 165/2014** sobre el tacógrafo digital
+- **Legislación nacional** sobre transporte por carretera
+
+## 🚨 Importante
+
+**Esta aplicación es una herramienta de ayuda visual y no sustituye el tacógrafo digital obligatorio.** Los conductores profesionales deben:
+
+- Mantener su tacógrafo digital actualizado
+- Respetar siempre los tiempos oficiales
+- Consultar la normativa vigente en su país
+- Usar esta app solo como referencia visual
+
+## 🛠️ Tecnologías Utilizadas
+
+- **HTML5**: Estructura semántica
+- **CSS3**: Estilos modernos y responsive
+- **JavaScript ES6+**: Lógica de la aplicación
+- **Service Worker**: Funcionalidad offline
+- **Web App Manifest**: Instalación como PWA
+- **Progressive Web App**: Experiencia nativa
+
+## 📞 Soporte
+
+Para soporte técnico o sugerencias:
+- **Desarrollador**: Rubén Cerezo
+- **Versión**: v2.1.0
+- **Contacto**: Disponible en la app
 
 ## 📄 Licencia
 
-Este proyecto es de código abierto. Úsalo, modifícalo y distribúyelo libremente.
-
-## 🤝 Contribuciones
-
-¡Las contribuciones son bienvenidas! Puedes:
-- Reportar bugs
-- Sugerir nuevas características
-- Mejorar la documentación
-- Optimizar el código
+Esta aplicación está desarrollada para uso educativo y profesional en el sector del transporte por carretera.
 
 ---
 
-**¡Disfruta tu nueva app de semáforo profesional! 🚦✨**
+**🚛 Tacógrafo App - Tu compañero de viaje para el cumplimiento de la regla del minuto**

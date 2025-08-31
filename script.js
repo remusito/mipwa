@@ -90,78 +90,50 @@ class SemaforoApp {
     startCycle() {
         this.isRunning = true;
         this.counter = 0;
-        this.isFirstCycle = true;
+        this.isFirstYellow = true; // Para distinguir el primer amarillo de 30s
         this.startBtn.textContent = 'PARAR';
         this.startBtn.classList.add('stop');
 
-        // Iniciar con ámbar en el primer ciclo
-        this.circleElement.className = 'circle yellow';
+        // Iniciar con ámbar parpadeante
+        this.circleElement.className = 'circle yellow blinking';
         this.updateStatusMessage('yellow');
 
         this.intervalId = setInterval(() => {
             this.counter++;
             
-            // Mostrar contador desde cero cuando esté en rojo
-            let displayCounter = this.counter;
-            if (this.circleElement.classList.contains('red')) {
-                // En rojo, mostrar desde 0 (restar 6000 centésimas = 60s)
-                displayCounter = this.counter - 6000;
-            }
-            
-            this.counterElement.textContent = this.formatTime(displayCounter);
+            // Mostrar contador desde cero en cada fase
+            this.counterElement.textContent = this.formatTime(this.counter);
 
-            if (this.isFirstCycle) {
-                // PRIMER CICLO: Ámbar 30s (últimos 5s parpadeando) → Verde 55s → Ámbar parpadeando 60s → Rojo 120s
-                if (this.counter === 2500) { // 25 segundos = 2500 centésimas
-                    // Empezar parpadeo en los últimos 5 segundos del ámbar inicial
-                    this.circleElement.className = 'circle yellow blinking';
-                    this.playBeep(1000, 150); // Sonido de aviso
-                } else if (this.counter === 3000) { // 30 segundos = 3000 centésimas
-                    // Cambiar a verde a los 30 segundos
-                    this.circleElement.className = 'circle green';
-                    this.updateStatusMessage('green');
-                    this.playBeep(600, 300); // Sonido para verde
-                } else if (this.counter === 5500) { // 55 segundos = 5500 centésimas
-                    // Empezar ámbar parpadeando a los 55 segundos
-                    this.circleElement.className = 'circle yellow blinking';
-                    this.updateStatusMessage('yellow');
-                    this.playBeep(1000, 150); // Sonido para ámbar
-                } else if (this.counter === 6000) { // 60 segundos = 6000 centésimas
-                    // Cambiar a rojo a los 60 segundos
-                    this.circleElement.className = 'circle red';
-                    this.updateStatusMessage('red');
-                    this.playBeep(400, 500); // Sonido para rojo
-                } else if (this.counter === 12000) { // 120 segundos = 12000 centésimas (60s de rojo)
-                    // Reiniciar ciclo - ahora bucle verde/ámbar/rojo
-                    this.isFirstCycle = false;
-                    this.counter = 0;
-                    this.circleElement.className = 'circle green';
-                    this.updateStatusMessage('green');
-                    this.playBeep(600, 300); // Sonido para verde
-                }
-            } else {
-                // BUCLE INFINITO: Verde 55s → Ámbar parpadeando 60s → Rojo 120s → Verde...
-                if (this.counter === 5500) { // 55 segundos = 5500 centésimas
-                    // Empezar ámbar parpadeando a los 55 segundos
-                    this.circleElement.className = 'circle yellow blinking';
-                    this.updateStatusMessage('yellow');
-                    this.playBeep(1000, 150); // Sonido para ámbar
-                } else if (this.counter === 6000) { // 60 segundos = 6000 centésimas
-                    // Cambiar a rojo a los 60 segundos
-                    this.circleElement.className = 'circle red';
-                    this.updateStatusMessage('red');
-                    this.playBeep(400, 500); // Sonido para rojo
-                } else if (this.counter === 12000) { // 120 segundos = 12000 centésimas (60s de rojo)
-                    // Volver a verde y reiniciar contador
-                    this.counter = 0;
-                    this.circleElement.className = 'circle green';
-                    this.updateStatusMessage('green');
-                    this.playBeep(600, 300); // Sonido para verde
-                }
+            // BUCLE INFINITO: Amarillo 30s → Verde 50s → Amarillo 10s → Rojo 60s → repetir...
+            if (this.circleElement.classList.contains('yellow') && this.circleElement.classList.contains('blinking') && this.isFirstYellow && this.counter >= 3000) {
+                // PRIMER amarillo: cambiar a verde a los 30 segundos y reiniciar contador
+                this.counter = 0;
+                this.isFirstYellow = false; // Ya no es el primer amarillo
+                this.circleElement.className = 'circle green';
+                this.updateStatusMessage('green');
+                this.playBeep(600, 300);
+            } else if (this.circleElement.classList.contains('green') && this.counter >= 5000) {
+                // Empezar ámbar parpadeante a los 50 segundos y reiniciar contador
+                this.counter = 0;
+                this.circleElement.className = 'circle yellow blinking';
+                this.updateStatusMessage('yellow');
+                this.playBeep(1000, 150);
+            } else if (this.circleElement.classList.contains('yellow') && this.circleElement.classList.contains('blinking') && !this.isFirstYellow && this.counter >= 1000) {
+                // Amarillo POSTERIOR: cambiar a rojo a los 10 segundos y reiniciar contador
+                this.counter = 0;
+                this.circleElement.className = 'circle red';
+                this.updateStatusMessage('red');
+                this.playBeep(400, 500);
+            } else if (this.circleElement.classList.contains('red') && this.counter >= 6000) {
+                // Volver a verde y reiniciar contador
+                this.counter = 0;
+                this.circleElement.className = 'circle green';
+                this.updateStatusMessage('green');
+                this.playBeep(600, 300);
             }
 
-            // Sonido de tick durante ámbar parpadeando
-            if (this.circleElement.classList.contains('blinking') && this.counter % 100 === 0) {
+            // Sonido de tick durante ámbar parpadeando (excepto los primeros 30 segundos)
+            if (this.circleElement.classList.contains('blinking') && !this.isFirstYellow && this.counter % 100 === 0) {
                 this.playBeep(1200, 100); // Tick más audible durante el ámbar
             }
 
@@ -174,7 +146,7 @@ class SemaforoApp {
             this.intervalId = null;
         }
         this.isRunning = false;
-        this.isFirstCycle = true;
+        this.isFirstYellow = true;
         this.startBtn.textContent = 'INICIAR';
         this.startBtn.classList.remove('stop');
         this.counter = 0;
@@ -1049,7 +1021,8 @@ class SettingsManager {
             'control-horas': () => {
                 // Abrir página de control de horas para conductores profesionales
                 window.open('./control-horas.html', '_blank');
-            }
+            },
+                        
         };
 
         const categoryAction = categoryMessages[category];

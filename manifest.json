@@ -1,43 +1,43 @@
 {
-  "name": "Semáforo App - Contador de Tiempo",
-  "short_name": "Semáforo",
-  "description": "Aplicación de semáforo profesional con contador preciso, sonidos y modo oscuro. Perfecta para entrenamientos y competiciones deportivas.",
-  "version": "2.1.0",
-  "author": "Rubén Cerezo",
-  "start_url": "/mipwa/index.html",
-  "scope": "/mipwa/",
-  "display": "standalone",
-  "background_color": "#667eea",
-  "theme_color": "#667eea",
-  "orientation": "portrait-primary",
-  "categories": ["sports", "utilities", "productivity"],
-  "lang": "es",
-  "dir": "ltr",
-  "prefer_related_applications": false,
-  "icons": [
-    {
-      "src": "/mipwa/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/mipwa/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "/mipwa/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/mipwa/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
-    }
-  ]
+    "name": "Semáforo App - Contador de Tiempo",
+    "short_name": "Semáforo",
+    "description": "Aplicación de semáforo profesional con contador preciso, sonidos y modo oscuro. Perfecta para entrenamientos y competiciones deportivas.",
+    "version": "2.1.0",
+    "author": "Rubén Cerezo",
+    "start_url": "./index.html",
+    "scope": "./",
+    "display": "standalone",
+    "background_color": "#667eea",
+    "theme_color": "#667eea",
+    "orientation": "portrait-primary",
+    "categories": ["sports", "utilities", "productivity"],
+    "lang": "es",
+    "dir": "ltr",
+    "prefer_related_applications": false,
+    "icons": [
+        {
+            "src": "./icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "./icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "./icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "./icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
 }
