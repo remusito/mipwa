@@ -5,14 +5,18 @@ class SemaforoApp {
         this.intervalId = null;
         this.audioContext = null;
         this.isFirstCycle = true; // Para controlar el primer ciclo
+        this.currentLogo = 'scania'; // Logo actual (scania o renault)
 
         this.counterElement = document.getElementById('counter');
         this.circleElement = document.getElementById('circle');
         this.startBtn = document.getElementById('startBtn');
         this.statusMessage = document.getElementById('statusMessage');
+        this.scaniaLogo = document.getElementById('scaniaLogo');
+        this.renaultLogo = document.getElementById('renaultLogo');
 
         this.initAudio();
         this.bindEvents();
+        this.loadLogoPreference();
     }
 
     initAudio() {
@@ -153,6 +157,37 @@ class SemaforoApp {
         this.counterElement.textContent = '00.00';
         this.circleElement.className = 'circle yellow'; // Volver al estado inicial (ámbar)
         this.updateStatusMessage('yellow');
+    }
+
+    // Métodos para manejar los logos
+    switchLogo(logoType) {
+        if (logoType === 'scania') {
+            this.scaniaLogo.style.display = 'block';
+            this.renaultLogo.style.display = 'none';
+            this.currentLogo = 'scania';
+        } else if (logoType === 'renault') {
+            this.scaniaLogo.style.display = 'none';
+            this.renaultLogo.style.display = 'block';
+            this.currentLogo = 'renault';
+        } else if (logoType === 'none') {
+            this.scaniaLogo.style.display = 'none';
+            this.renaultLogo.style.display = 'none';
+            this.currentLogo = 'none';
+        }
+        this.saveLogoPreference();
+    }
+
+    saveLogoPreference() {
+        localStorage.setItem('semaforoLogo', this.currentLogo);
+    }
+
+    loadLogoPreference() {
+        const savedLogo = localStorage.getItem('semaforoLogo');
+        if (savedLogo && (savedLogo === 'scania' || savedLogo === 'renault' || savedLogo === 'none')) {
+            this.switchLogo(savedLogo);
+        } else {
+            this.switchLogo('none'); // Por defecto sin logo
+        }
     }
 }
 
@@ -314,6 +349,17 @@ class SettingsManager {
             });
         });
 
+        // Selector de logo
+        const logoSelect = document.getElementById('logoSelect');
+        if (logoSelect) {
+            logoSelect.addEventListener('change', (e) => {
+                console.log('Cambiando logo a:', e.target.value);
+                if (semaforoApp) {
+                    semaforoApp.switchLogo(e.target.value);
+                }
+            });
+        }
+
         // Toggle tema - REMOVIDO para evitar conflictos
         // El toggle se maneja en el sistema de respaldo
 
@@ -339,9 +385,14 @@ class SettingsManager {
     }
 
     loadSettings() {
-        // Aquí se pueden cargar más ajustes en el futuro
-        console.log('Ajustes cargados');
+        // Cargar preferencia del logo
+        const logoSelect = document.getElementById('logoSelect');
+        if (logoSelect) {
+            const savedLogo = localStorage.getItem('semaforoLogo') || 'none';
+            logoSelect.value = savedLogo;
+        }
         
+        console.log('Ajustes cargados');
     }
 
     async shareApp() {
@@ -627,7 +678,7 @@ class SettingsManager {
 
     openDonation() {
         // URL de PayPal para donaciones (puedes cambiar esta URL por tu enlace real de PayPal)
-        const paypalUrl = 'https://www.paypal.com/donate/?business=rubencerezo@example.com&no_recurring=0&item_name=Apoyo+al+desarrollo+de+Sem%C3%A1foro+App&currency_code=EUR';
+        const paypalUrl = 'https://paypal.me/timehackpro?country.x=ES&locale.x=es_ES", "_blank';
         
         // Mostrar modal de confirmación antes de abrir PayPal
         const modal = document.createElement('div');

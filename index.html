@@ -32,6 +32,12 @@
     <meta name="format-detection" content="telephone=no">
 
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="logo-styles.css">
+    <!-- <link rel="stylesheet" href="ads.css"> -->
+    
+    <!-- Google AdSense -->
+    <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2279178254221933"
+         crossorigin="anonymous"></script> -->
 </head>
 
 <body>
@@ -100,10 +106,10 @@
 
             <div class="setting-item">
                 <label>Apoyar el desarrollo</label>
-                <button class="donate-btn" id="donateBtn">
-                    💳
-                </button>
+                <button class="donate-btn" id="donateBtn">💳</button>
             </div>
+            
+
 
             <div class="setting-item">
                 <label>Versión Premium</label>
@@ -118,14 +124,7 @@
                 <div class="setting-item info-item">
                     <div class="info-content">
                         <div class="info-label">Versión</div>
-                        <div class="info-value">v2.1.0</div>
-                    </div>
-                </div>
-
-                <div class="setting-item info-item">
-                    <div class="info-content">
-                        <div class="info-label">Desarrollador </div>
-                        <div class="info-value">Rubén Cerezo</div>
+                        <div class="info-value">v2.1.1</div>
                     </div>
                 </div>
 
@@ -151,11 +150,26 @@
     <div class="container">
         <div class="status-message" id="statusMessage">ESPERE</div>
         <div class="counter" id="counter">00.00</div>
-        <div class="circle yellow" id="circle"></div>
+        <div class="circle yellow" id="circle">
+            <div class="logo-container" id="logoContainer">
+                <img src="scania-logo.svg" alt="Scania Logo" class="logo scania-logo" id="scaniaLogo">
+                <img src="renault-logo.svg" alt="Renault Logo" class="logo renault-logo" id="renaultLogo" style="display: none;">
+            </div>
+        </div>
         <button class="start-btn" id="startBtn">INICIAR</button>
 
 
     </div>
+
+    <!-- Contenedor de publicidad en el pie -->
+    <!-- <div class="ad-container">
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-2279178254221933"
+             data-ad-slot="1234567890"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+    </div> -->
 
     <script src="script.js"></script>
     <script>
@@ -203,6 +217,9 @@
         window.addEventListener('online', updateOnlineStatus);
         window.addEventListener('offline', updateOnlineStatus);
         window.addEventListener('load', updateOnlineStatus);
+
+        // Inicializar Google AdSense
+        // (adsbygoogle = window.adsbygoogle || []).push({});
     </script>
 </body>
 
