@@ -76,4 +76,4 @@ Los conductores deben mantener su dispositivo oficial actualizado y consultar la
 • 	Versión: v2.1.0
 • 	Contacto: Disponible en la app
 
-⏱️ TimeHack – Tu asistente visual para dominar la regla del minut
+⏱️ TimeHack – Tu asistente visual para dominar la regla del minuto
