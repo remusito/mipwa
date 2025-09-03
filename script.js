@@ -397,8 +397,8 @@ class SettingsManager {
 
     async shareApp() {
         const shareData = {
-            title: 'Semáforo App - Contador de Tiempo',
-            text: '¡Mira esta increíble app de semáforo! Perfecta para entrenamientos y ejercicios de timing.',
+            title: 'Timehack - Optimiza tu jornada sin romper las reglas',
+            text: '¡Mira esta increíble app de TimeHack - Optimiza tu jornada sin romper las reglas.',
             url: window.location.href
         };
 
