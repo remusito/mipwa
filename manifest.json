@@ -1,7 +1,7 @@
 {
-    "name": "Semáforo App - Contador de Tiempo",
-    "short_name": "Semáforo",
-    "description": "Aplicación de semáforo profesional con contador preciso, sonidos y modo oscuro. Perfecta para entrenamientos y competiciones deportivas.",
+    "name": "TimeHack - Optimiza tu jornada sin romper las reglas",
+    "short_name": "TimeHack",
+    "description": "TimeHack es una app progresiva que ayuda a conductores profesionales a optimizar sus tiempos de conducción respetando la normativa del tacógrafo digital.",
     "version": "2.1.0",
     "author": "Rubén Cerezo",
     "start_url": "./index.html",
