@@ -1,4 +1,3 @@
-Perfecto, Ruben. Aquí tienes la descripción de tu app TimeHack en formato Markdown, lista para subir a GitHub o usar en PWABuilder:
 # ⏱️ TimeHack – Optimiza tu jornada con inteligencia
 
 ## 🚚 Aplicación PWA para Conductores Profesionales
