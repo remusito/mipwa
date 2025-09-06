@@ -248,7 +248,14 @@
             </div>
         </div>
 
-        <div class="status" id="status">
+        <div class="controls">
+            <button class="btn primary" id="startBtn" onclick="startTracking()">Iniciar</button>
+            <button class="btn" id="resetBtn" onclick="resetTracking()">Reiniciar</button>
+            <button class="btn" id="retryBtn" onclick="retryPermissions()" style="display: none;">🔄 Reintentar</button>
+        </div>
+    </div>
+
+            <div class="status" id="status">
             📍 Presiona "Iniciar" para comenzar el seguimiento GPS
 
 ℹ️ Requisitos:
@@ -256,13 +263,6 @@
 • Activar GPS/Ubicación en el dispositivo
 • Estar en exterior o cerca de ventanas para mejor señal
         </div>
-
-        <div class="controls">
-            <button class="btn primary" id="startBtn" onclick="startTracking()">Iniciar</button>
-            <button class="btn" id="resetBtn" onclick="resetTracking()">Reiniciar</button>
-            <button class="btn" id="retryBtn" onclick="retryPermissions()" style="display: none;">🔄 Reintentar</button>
-        </div>
-    </div>
 
     <script>
         let watchId = null;
