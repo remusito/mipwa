@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>TimeHack - Optimiza tu jornada sin romper las reglas</title>
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Theme colors -->
+    <meta name="theme-color" content="#667eea">
+    <meta name="msapplication-TileColor" content="#667eea">
+
+    <!-- Apple specific -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Semáforo">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+
+    <!-- SEO -->
+    <meta name="description" content="TimeHack es una app progresiva que ayuda a conductores profesionales a optimizar sus tiempos de conducción respetando la normativa del tacógrafo digital.">
+    <meta name="keywords" content="TimeHack - Optimiza tu jornada sin romper las reglas, contador, tiempo, cronómetro, app">
+    <meta name="author" content="TimeHack">
+
+    <!-- Prevent zoom on inputs -->
+    <meta name="format-detection" content="telephone=no">
+
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="logo-styles.css">
+    <!-- <link rel="stylesheet" href="ads.css"> -->
+    
+    <!-- Google AdSense -->
+    <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2279178254221933"
+         crossorigin="anonymous"></script> -->
+</head>
+
+<body>
+    <!-- Botón flotante de menú -->
+    <div class="menu-icon" id="menuIcon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+            <path d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z" />
+        </svg>
+    </div>
+
+    <!-- Botón flotante de ajustes -->
+    <div class="settings-icon" id="settingsIcon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+            <path
+                d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11.03L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.22,8.95 2.27,9.22 2.46,9.37L4.57,11.03C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.22,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.68 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z" />
+        </svg>
+    </div>
+
+    <!-- Panel de menú deslizante -->
+    <div class="menu-panel" id="menuPanel">
+        <div class="menu-overlay" id="menuOverlay"></div>
+        <div class="menu-content">
+            <div class="menu-header">
+                <h3>Categorías</h3>
+                <button class="menu-close" id="closeMenu">×</button>
+            </div>
+            <div class="menu-items">
+                <div class="menu-item" data-category="mantenimiento">
+                    <span class="menu-text">Mantenimiento</span>
+                </div>
+                <div class="menu-item" data-category="contactos">
+                    <span class="menu-text">Contactos</span>
+                </div>
+                <div class="menu-item" data-category="gps">
+                    <span class="menu-text">Velocímetro GPS</span>
+                </div>
+                <div class="menu-item" data-category="control-horas">
+                    <span class="menu-text">Horas de conducción</span>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel de ajustes -->
+    <div class="settings-panel" id="settingsPanel">
+        <div class="settings-header">
+            <h3>Ajustes</h3>
+            <button class="close-btn" id="closeSettings">×</button>
+        </div>
+        <div class="settings-content">
+            <div class="setting-item">
+                <label for="themeToggle">Modo oscuro</label>
+                <div class="toggle-switch">
+                    <input type="checkbox" id="themeToggle">
+                    <span class="slider"></span>
+                </div>
+            </div>
+
+            <div class="setting-item">
+                <label>Compartir app</label>
+                <button class="share-btn" id="shareBtn">
+                    📤
+                </button>
+            </div>
+
+            <div class="setting-item">
+                <label>Apoyar el desarrollo</label>
+                <button class="donate-btn" id="donateBtn">💳</button>
+            </div>
+            
+
+
+            <div class="setting-item">
+                <label>Versión Premium</label>
+                <button class="premium-btn" id="premiumBtn">
+                    ⭐
+                </button>
+            </div>
+
+            <div class="settings-section">
+                <h4>Información</h4>
+
+                <div class="setting-item info-item">
+                    <div class="info-content">
+                        <div class="info-label">Versión</div>
+                        <div class="info-value">v2.1.1</div>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <label>Buscar actualizaciones</label>
+                    <button class="btn" id="checkUpdatesBtn">
+                        🔍
+                    </button>
+                </div>
+            </div>
+
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlay para cerrar ajustes -->
+    <div class="settings-overlay" id="settingsOverlay"></div>
+
+    <!-- Botón de instalación móvil -->
+
+
+    <div class="container">
+        <div class="status-message" id="statusMessage">ESPERE</div>
+        <div class="counter" id="counter">00.00</div>
+        <div class="circle yellow" id="circle">
+            <div class="logo-container" id="logoContainer">
+                <img src="scania-logo.svg" alt="Scania Logo" class="logo scania-logo" id="scaniaLogo">
+                <img src="renault-logo.svg" alt="Renault Logo" class="logo renault-logo" id="renaultLogo" style="display: none;">
+            </div>
+        </div>
+        <button class="start-btn" id="startBtn">INICIAR</button>
+
+
+    </div>
+
+    <!-- Contenedor de publicidad en el pie -->
+    <!-- <div class="ad-container">
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-2279178254221933"
+             data-ad-slot="1234567890"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+    </div> -->
+
+    <script src="script.js"></script>
+    <script>
+        // Registrar Service Worker con mejor manejo de errores
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async () => {
+                try {
+                    const registration = await navigator.serviceWorker.register('./sw.js');
+                    console.log('SW registrado correctamente:', registration.scope);
+
+                    // Forzar actualización si hay una nueva versión
+                    registration.addEventListener('updatefound', () => {
+                        console.log('Nueva versión del SW disponible');
+                        const newWorker = registration.installing;
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                console.log('SW actualizado, recargando...');
+                                window.location.reload();
+                            }
+                        });
+                    });
+
+                    // Verificar actualizaciones cada 30 segundos
+                    setInterval(() => {
+                        registration.update();
+                    }, 30000);
+                } catch (error) {
+                    console.error('SW falló al registrarse:', error);
+                }
+            });
+        } else {
+            console.log('Service Worker no soportado en este navegador');
+        }
+
+        // Detectar estado online/offline
+        function updateOnlineStatus() {
+            const status = navigator.onLine ? 'online' : 'offline';
+            console.log('Estado de conexión:', status);
+
+            if (!navigator.onLine) {
+                console.log('Modo offline - usando cache');
+            }
+        }
+
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+        window.addEventListener('load', updateOnlineStatus);
+
+        // Inicializar Google AdSense
+        // (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</body>
+
+</html>
