@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Velocímetro GPS - Semáforo App</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .title {
+            font-size: 24px;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+
+        .speedometer {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 0 auto 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .speedometer-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #needle {
+            transition: transform 0.5s ease-in-out;
+            transform-origin: 150px 150px;
+        }
+
+        .speed-display {
+            text-align: center;
+            z-index: 1;
+        }
+
+        .speed-value {
+            font-size: 48px;
+            font-weight: bold;
+            line-height: 1;
+            margin-bottom: 5px;
+        }
+
+        .speed-unit {
+            font-size: 18px;
+            opacity: 0.8;
+        }
+
+        .speed-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .detail-card {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .detail-label {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .status {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            white-space: pre-line;
+            text-align: left;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .status.error {
+            background: rgba(255,0,0,0.2);
+            border: 1px solid rgba(255,0,0,0.5);
+        }
+
+        .status.success {
+            background: rgba(0,255,0,0.2);
+            border: 1px solid rgba(0,255,0,0.5);
+        }
+
+        .status.warning {
+            background: rgba(255,255,0,0.2);
+            border: 1px solid rgba(255,255,0,0.5);
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .btn.primary {
+            background: #00ff00;
+            color: black;
+            font-weight: bold;
+        }
+
+        .btn.primary:hover {
+            background: #00cc00;
+        }
+
+        .accuracy-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        .accuracy-indicator.good {
+            background: rgba(0,255,0,0.3);
+        }
+
+        .accuracy-indicator.medium {
+            background: rgba(255,255,0,0.3);
+        }
+
+        .accuracy-indicator.poor {
+            background: rgba(255,0,0,0.3);
+        }
+
+        @media (max-width: 480px) {
+            .speedometer {
+                width: 250px;
+                height: 250px;
+            }
+            
+            .speed-value {
+                font-size: 36px;
+            }
+            
+            .title {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="window.close()" title="Volver">←</button>
+    
+    <div class="accuracy-indicator" id="accuracyIndicator">
+        GPS: Desconectado
+    </div>
+
+    <div class="container">
+        <h1 class="title">🚗 Velocímetro GPS</h1>
+        
+        <div class="speedometer">
+            <svg class="speedometer-svg" width="300" height="300" viewBox="0 0 300 300">
+                <defs>
+                    <linearGradient id="speedo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:rgba(255,255,255,0.3);stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:rgba(255,255,255,0.1);stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <circle cx="150" cy="150" r="140" fill="rgba(255,255,255,0.1)" stroke="url(#speedo-gradient)" stroke-width="8"/>
+                <path id="needle" d="M 150 150 L 150 30" stroke="red" stroke-width="4" stroke-linecap="round" />
+            </svg>
+            <div class="speed-display">
+                <div class="speed-value" id="speedValue">0</div>
+                <div class="speed-unit">km/h</div>
+            </div>
+        </div>
+
+        <div class="speed-details">
+            <div class="detail-card">
+                <div class="detail-label">Velocidad Máxima</div>
+                <div class="detail-value" id="maxSpeed">0 km/h</div>
+            </div>
+            <div class="detail-card">
+                <div class="detail-label">Velocidad Media</div>
+                <div class="detail-value" id="avgSpeed">0 km/h</div>
+            </div>
+            <div class="detail-card">
+                <div class="detail-label">Distancia</div>
+                <div class="detail-value" id="distance">0.0 km</div>
+            </div>
+            <div class="detail-card">
+                <div class="detail-label">Tiempo</div>
+                <div class="detail-value" id="time">00:00</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn primary" id="startBtn" onclick="startTracking()">Iniciar</button>
+            <button class="btn" id="resetBtn" onclick="resetTracking()">Reiniciar</button>
+            <button class="btn" id="retryBtn" onclick="retryPermissions()" style="display: none;">🔄 Reintentar</button>
+        </div>
+    </div>
+
+            <div class="status" id="status">
+            📍 Presiona "Iniciar" para comenzar el seguimiento GPS
+
+ℹ️ Requisitos:
+• Permitir acceso a la ubicación cuando se solicite
+• Activar GPS/Ubicación en el dispositivo
+• Estar en exterior o cerca de ventanas para mejor señal
+        </div>
+
+    <script>
+        let watchId = null;
+        let isTracking = false;
+        let startTime = null;
+        let lastPosition = null;
+        let totalDistance = 0;
+        let maxSpeed = 0;
+        let speedReadings = [];
+
+        const speedValue = document.getElementById('speedValue');
+        const maxSpeedEl = document.getElementById('maxSpeed');
+        const avgSpeedEl = document.getElementById('avgSpeed');
+        const distanceEl = document.getElementById('distance');
+        const timeEl = document.getElementById('time');
+        const statusEl = document.getElementById('status');
+        const accuracyEl = document.getElementById('accuracyIndicator');
+        const startBtn = document.getElementById('startBtn');
+        const needle = document.getElementById('needle');
+
+        function updateNeedle(speed) {
+            const maxSpeedDisplay = 200;
+            const maxRotation = 270; // from -135 to 135
+            let rotation = (speed / maxSpeedDisplay) * maxRotation - 135;
+            if (rotation < -135) rotation = -135;
+            if (rotation > 135) rotation = 135;
+            needle.style.transform = `rotate(${rotation}deg)`;
+        }
+
+        async function startTracking() {
+            if (!navigator.geolocation) {
+                showStatus('❌ GPS no soportado en este dispositivo', 'error');
+                return;
+            }
+
+            if (isTracking) {
+                stopTracking();
+                return;
+            }
+
+            try {
+                if ('permissions' in navigator) {
+                    const permission = await navigator.permissions.query({name: 'geolocation'});
+                    
+                    if (permission.state === 'denied') {
+                        showPermissionInstructions();
+                        return;
+                    }
+                }
+            } catch (e) {
+                console.log('API de permisos no disponible');
+            }
+
+            showStatus('🔍 Solicitando acceso al GPS...', 'warning');
+            
+            const options = {
+                enableHighAccuracy: true,
+                timeout: 15000,
+                maximumAge: 2000
+            };
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    showStatus('🔍 GPS conectado, iniciando seguimiento...', 'warning');
+                    
+                    watchId = navigator.geolocation.watchPosition(
+                        onPositionSuccess,
+                        onPositionError,
+                        options
+                    );
+
+                    isTracking = true;
+                    startTime = Date.now();
+                    startBtn.textContent = 'Parar';
+                    startBtn.style.background = '#ff4444';
+                },
+                (error) => {
+                    onPositionError(error);
+                },
+                options
+            );
+        }
+
+        function stopTracking() {
+            if (watchId) {
+                navigator.geolocation.clearWatch(watchId);
+                watchId = null;
+            }
+            
+            isTracking = false;
+            startBtn.textContent = 'Iniciar';
+            startBtn.style.background = '#00ff00';
+            showStatus('⏹️ Seguimiento detenido', 'warning');
+            accuracyEl.textContent = 'GPS: Desconectado';
+            accuracyEl.className = 'accuracy-indicator';
+        }
+
+        function onPositionSuccess(position) {
+            const { latitude, longitude, accuracy, speed } = position.coords;
+            
+            updateAccuracyIndicator(accuracy);
+            
+            let currentSpeed = 0;
+            if (speed !== null && speed >= 0) {
+                currentSpeed = speed * 3.6;
+            } else if (lastPosition) {
+                const distance = calculateDistance(
+                    lastPosition.latitude, lastPosition.longitude,
+                    latitude, longitude
+                );
+                const timeDiff = (Date.now() - lastPosition.timestamp) / 1000;
+                if (timeDiff > 0) {
+                    currentSpeed = (distance / timeDiff) * 3.6;
+                }
+            }
+
+            if (currentSpeed > 200) {
+                currentSpeed = speedReadings.length > 0 ? speedReadings[speedReadings.length - 1] : 0;
+            }
+
+            speedValue.textContent = Math.round(currentSpeed);
+            updateNeedle(currentSpeed);
+            
+            if (currentSpeed > maxSpeed) {
+                maxSpeed = currentSpeed;
+                maxSpeedEl.textContent = Math.round(maxSpeed) + ' km/h';
+            }
+
+            speedReadings.push(currentSpeed);
+            if (speedReadings.length > 10) {
+                speedReadings.shift();
+            }
+
+            const avgSpeed = speedReadings.reduce((a, b) => a + b, 0) / speedReadings.length;
+            avgSpeedEl.textContent = Math.round(avgSpeed) + ' km/h';
+
+            if (lastPosition) {
+                const distance = calculateDistance(
+                    lastPosition.latitude, lastPosition.longitude,
+                    latitude, longitude
+                );
+                totalDistance += distance;
+                distanceEl.textContent = (totalDistance / 1000).toFixed(2) + ' km';
+            }
+
+            if (startTime) {
+                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                const minutes = Math.floor(elapsed / 60);
+                const seconds = elapsed % 60;
+                timeEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+
+            lastPosition = {
+                latitude,
+                longitude,
+                timestamp: Date.now()
+            };
+
+            showStatus(`✅ GPS activo - Velocidad: ${Math.round(currentSpeed)} km/h`, 'success');
+        }
+
+        function onPositionError(error) {
+            let message = '❌ Error GPS: ';
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    showPermissionInstructions();
+                    return;
+                case error.POSITION_UNAVAILABLE:
+                    message += 'Ubicación no disponible. Verifica que el GPS esté activado.';
+                    break;
+                case error.TIMEOUT:
+                    message += 'Tiempo de espera agotado. Intenta en un lugar con mejor señal.';
+                    break;
+                default:
+                    message += 'Error desconocido.';
+                    break;
+            }
+            
+            showStatus(message, 'error');
+            accuracyEl.textContent = 'GPS: Error';
+            accuracyEl.className = 'accuracy-indicator poor';
+        }
+
+        function showPermissionInstructions() {
+            const isChrome = /Chrome/.test(navigator.userAgent);
+            const isFirefox = /Firefox/.test(navigator.userAgent);
+            const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+            
+            let instructions = '';
+            
+            if (isChrome) {
+                instructions = `📍 PERMISOS GPS DENEGADOS
+
+Para activar el GPS en Chrome:
+
+1️⃣ Toca el icono 🔒 o ℹ️ en la barra de direcciones
+2️⃣ Selecciona "Permisos del sitio" o "Configuración del sitio"
+3️⃣ Busca "Ubicación" y selecciona "Permitir"
+4️⃣ Toca "Reintentar" abajo
+
+O también:
+• Chrome → Menú (⋮) → Configuración → Privacidad y seguridad → Configuración del sitio → Ubicación → Permitir para este sitio`;
+            } else if (isFirefox) {
+                instructions = `📍 PERMISOS GPS DENEGADOS
+
+Para activar el GPS en Firefox:
+
+1️⃣ Toca el icono 🔒 en la barra de direcciones
+2️⃣ Selecciona "Permisos"
+3️⃣ Cambia "Ubicación" a "Permitir"
+4️⃣ Toca "Reintentar" abajo`;
+            } else if (isSafari) {
+                instructions = `📍 PERMISOS GPS DENEGADOS
+
+Para activar el GPS en Safari:
+
+1️⃣ Ve a Ajustes → Safari → Ubicación
+2️⃣ Selecciona "Preguntar" o "Permitir"
+3️⃣ Toca "Reintentar" abajo
+
+También verifica:
+• Ajustes → Privacidad → Servicios de ubicación → Safari`;
+            } else {
+                instructions = `📍 PERMISOS GPS DENEGADOS
+
+Para activar el GPS:
+
+1️⃣ Busca el icono de ubicación 📍 en la barra de direcciones
+2️⃣ Selecciona "Permitir" o "Activar ubicación"
+3️⃣ Toca "Reintentar" abajo
+
+Si no aparece:
+• Ve a la configuración del navegador
+• Busca "Permisos" o "Privacidad"
+• Activa la ubicación para este sitio`;
+            }
+            
+            showStatus(instructions, 'error');
+            accuracyEl.textContent = 'GPS: Permiso denegado';
+            accuracyEl.className = 'accuracy-indicator poor';
+            
+            document.getElementById('retryBtn').style.display = 'inline-block';
+        }
+
+        function retryPermissions() {
+            document.getElementById('retryBtn').style.display = 'none';
+            
+            showStatus('🔄 Reintentando acceso al GPS...', 'warning');
+            accuracyEl.textContent = 'GPS: Reintentando';
+            accuracyEl.className = 'accuracy-indicator';
+            
+            setTimeout(startTracking, 500);
+        }
+
+        function updateAccuracyIndicator(accuracy) {
+            let status = '';
+            let className = 'accuracy-indicator ';
+            
+            if (accuracy <= 10) {
+                status = `GPS: Excelente (±${Math.round(accuracy)}m)`;
+                className += 'good';
+            } else if (accuracy <= 50) {
+                status = `GPS: Bueno (±${Math.round(accuracy)}m)`;
+                className += 'medium';
+            } else {
+                status = `GPS: Pobre (±${Math.round(accuracy)}m)`;
+                className += 'poor';
+            }
+            
+            accuracyEl.textContent = status;
+            accuracyEl.className = className;
+        }
+
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371000;
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                    Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
+
+        function showStatus(message, type = '') {
+            statusEl.textContent = message;
+            statusEl.className = `status ${type}`;
+        }
+
+        function resetTracking() {
+            stopTracking();
+            
+            speedValue.textContent = '0';
+            updateNeedle(0);
+            maxSpeed = 0;
+            maxSpeedEl.textContent = '0 km/h';
+            avgSpeedEl.textContent = '0 km/h';
+            distanceEl.textContent = '0.0 km';
+            timeEl.textContent = '00:00';
+            
+            totalDistance = 0;
+            speedReadings = [];
+            lastPosition = null;
+            startTime = null;
+            
+            showStatus('🔄 Datos reiniciados. Presiona "Iniciar" para comenzar.', '');
+            accuracyEl.textContent = 'GPS: Desconectado';
+            accuracyEl.className = 'accuracy-indicator';
+        }
+
+        let wakeLock = null;
+
+        async function requestWakeLock() {
+            try {
+                if ('wakeLock' in navigator) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    console.log('Wake lock activado');
+                }
+            } catch (err) {
+                console.log('Wake lock no disponible:', err);
+            }
+        }
+
+        function releaseWakeLock() {
+            if (wakeLock) {
+                wakeLock.release();
+                wakeLock = null;
+                console.log('Wake lock liberado');
+            }
+        }
+
+        const originalStartTracking = startTracking;
+        startTracking = function() {
+            originalStartTracking();
+            if (isTracking) {
+                requestWakeLock();
+            }
+        };
+
+        const originalStopTracking = stopTracking;
+        stopTracking = function() {
+            originalStopTracking();
+            releaseWakeLock();
+        };
+
+        window.addEventListener('beforeunload', releaseWakeLock);
+    </script>
+</body>
+</html>

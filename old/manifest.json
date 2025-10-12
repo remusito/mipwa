@@ -1,0 +1,93 @@
+{
+    "id": "/timehack",
+    "name": "TimeHack - Optimiza tu jornada sin romper las reglas",
+    "short_name": "TimeHack",
+    "description": "TimeHack es una app progresiva que ayuda a conductores profesionales a optimizar sus tiempos de conducción respetando la normativa del tacógrafo digital.",
+    "version": "2.1.0",
+    "author": "Rubén Cerezo",
+    "start_url": "./index.html",
+    "scope": "./",
+    "display": "standalone",
+    "display_override": ["window-controls-overlay", "standalone"],
+    "edge_side_panel": {},
+    "launch_handler": {
+      "client_mode": "navigate-new"
+    },
+    "background_color": "#667eea",
+    "theme_color": "#667eea",
+    "orientation": "portrait-primary",
+    "categories": ["sports", "utilities", "productivity"],
+    "lang": "es",
+    "dir": "ltr",
+    "prefer_related_applications": true,
+    "related_applications": [
+      {
+        "platform": "play",
+        "url": "https://play.google.com/store/apps/details?id=com.timehack.app",
+        "id": "com.timehack.app"
+      }
+    ],
+    "iarc_rating_id": "demo-1234",
+    "scope_extensions": [
+      {
+        "type": "origin",
+        "origin": "https://timehack.es"
+      },
+      {
+        "type": "origin",
+        "origin": "https://app.timehack.es"
+      }
+    ],
+    "icons": [
+      {
+        "src": "./icon-192.png",
+        "sizes": "192x192",
+        "type": "image/png",
+        "purpose": "any"
+      },
+      {
+        "src": "./icon-192.png",
+        "sizes": "192x192",
+        "type": "image/png",
+        "purpose": "maskable"
+      },
+      {
+        "src": "./icon-512.png",
+        "sizes": "512x512",
+        "type": "image/png",
+        "purpose": "any"
+      },
+      {
+        "src": "./icon-512.png",
+        "sizes": "512x512",
+        "type": "image/png",
+        "purpose": "maskable"
+      }
+    ],
+    "screenshots": [
+      {
+        "src": "./screenshots/home.jpg",
+        "sizes": "1080x1920",
+        "type": "image/jpeg",
+        "label": "Pantalla principal con semáforo activo",
+        "form_factor": "narrow"
+      },
+      {
+        "src": "./screenshots/dashboard.jpg",
+        "sizes": "1280x720",
+        "type": "image/jpeg",
+        "label": "Vista de control de tiempos",
+        "form_factor": "wide"
+      }
+    ],
+    "file_handlers": [
+      {
+        "action": "/abrir-archivo",
+        "accept": {
+          "text/plain": [".txt"],
+          "application/pdf": [".pdf"]
+        }
+      }
+    ],
+    "gcm_sender_id": "103953800507"
+  }

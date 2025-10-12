@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía Instalación Android - Semáforo App</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        .step {
+            background: rgba(255, 255, 255, 0.1);
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #4CAF50;
+        }
+        .step h3 {
+            margin-top: 0;
+            color: #4CAF50;
+        }
+        .warning {
+            background: rgba(255, 152, 0, 0.2);
+            border-left-color: #ff9800;
+            border: 1px solid rgba(255, 152, 0, 0.3);
+        }
+        .warning h3 {
+            color: #ffb74d;
+        }
+        .success {
+            background: rgba(76, 175, 80, 0.2);
+            border-left-color: #4CAF50;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+        button {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        button:hover {
+            background: white;
+            color: #667eea;
+        }
+        .install-btn {
+            background: #4CAF50;
+            border-color: #4CAF50;
+            font-size: 18px;
+            padding: 20px 40px;
+        }
+        .install-btn:hover {
+            background: #45a049;
+            border-color: #45a049;
+        }
+        .install-btn:disabled {
+            background: #666;
+            border-color: #666;
+            cursor: not-allowed;
+        }
+        .device-info {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .center {
+            text-align: center;
+        }
+        .hidden {
+            display: none;
+        }
+        .emoji {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="center">
+        <h1>📱 Instalación en Android</h1>
+        <p>Guía paso a paso para instalar Semáforo App</p>
+    </div>
+
+    <div id="deviceInfo" class="device-info"></div>
+
+    <div id="installSection" class="center">
+        <button id="installBtn" class="install-btn" onclick="installApp()">
+            📱 Instalar Semáforo App
+        </button>
+        <div id="installStatus"></div>
+    </div>
+
+    <div class="step success" id="step1">
+        <h3><span class="emoji">✅</span>Paso 1: Verificar navegador</h3>
+        <p><strong>Usa Chrome en Android</strong> - Es el navegador con mejor soporte PWA</p>
+        <p>Otros navegadores (Firefox, Samsung Internet) pueden no mostrar la opción de instalación</p>
+    </div>
+
+    <div class="step" id="step2">
+        <h3><span class="emoji">🌐</span>Paso 2: Acceder a la app</h3>
+        <p>Asegúrate de estar en la misma WiFi que el PC</p>
+        <p>URL: <strong id="currentUrl"></strong></p>
+        <button onclick="copyUrl()">📋 Copiar URL</button>
+    </div>
+
+    <div class="step" id="step3">
+        <h3><span class="emoji">⏱️</span>Paso 3: Esperar unos segundos</h3>
+        <p>Chrome necesita unos segundos para detectar que es una PWA instalable</p>
+        <p>Navega un poco por la app (inicia el semáforo, abre ajustes)</p>
+    </div>
+
+    <div class="step" id="step4">
+        <h3><span class="emoji">📱</span>Paso 4: Buscar la opción de instalación</h3>
+        <p><strong>Opción 1:</strong> Aparecerá un banner automático "Instalar app"</p>
+        <p><strong>Opción 2:</strong> Menú de Chrome (⋮) → "Instalar app" o "Añadir a pantalla de inicio"</p>
+        <p><strong>Opción 3:</strong> Botón "Instalar" en la barra de direcciones</p>
+    </div>
+
+    <div class="step warning" id="troubleshooting">
+        <h3><span class="emoji">🔧</span>Si no aparece la opción de instalación</h3>
+        <p><strong>1. Verifica Chrome:</strong> Debe ser Chrome, no otro navegador</p>
+        <p><strong>2. Actualiza Chrome:</strong> Versión mínima requerida</p>
+        <p><strong>3. Limpia cache:</strong> Ajustes → Privacidad → Borrar datos</p>
+        <p><strong>4. Reinicia Chrome:</strong> Cierra y abre de nuevo</p>
+        <p><strong>5. Espera más tiempo:</strong> A veces tarda hasta 1 minuto</p>
+        <p><strong>6. Interactúa:</strong> Haz clic en botones, navega por la app</p>
+    </div>
+
+    <div class="step" id="step5">
+        <h3><span class="emoji">🎯</span>Paso 5: Confirmar instalación</h3>
+        <p>Cuando aparezca el diálogo, presiona <strong>"Instalar"</strong></p>
+        <p>La app aparecerá en tu pantalla de inicio como cualquier otra app</p>
+    </div>
+
+    <div class="center">
+        <button onclick="window.location.href='index.html'">🏠 Volver a la App</button>
+        <button onclick="window.location.href='diagnostico-pwa.html'">🔧 Diagnóstico</button>
+        <button onclick="testPWA()">🧪 Test PWA</button>
+    </div>
+
+    <div id="testResults" class="hidden"></div>
+
+    <script>
+        let deferredPrompt;
+        let installAttempted = false;
+
+        // Mostrar información del dispositivo
+        function showDeviceInfo() {
+            const info = document.getElementById('deviceInfo');
+            const isAndroid = /Android/.test(navigator.userAgent);
+            const isChrome = /Chrome/.test(navigator.userAgent);
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+            
+            info.innerHTML = `
+                <strong>Información del dispositivo:</strong><br>
+                📱 Android: ${isAndroid ? '✅ Sí' : '❌ No'}<br>
+                🌐 Chrome: ${isChrome ? '✅ Sí' : '❌ No'}<br>
+                📱 Ya instalada: ${isStandalone ? '✅ Sí' : '❌ No'}<br>
+                🔗 URL: ${window.location.href}<br>
+                👤 User Agent: ${navigator.userAgent.substring(0, 80)}...
+            `;
+
+            // Mostrar URL actual
+            document.getElementById('currentUrl').textContent = window.location.href;
+
+            // Si ya está instalada
+            if (isStandalone) {
+                document.getElementById('installSection').innerHTML = `
+                    <div class="step success">
+                        <h3>🎉 ¡App ya instalada!</h3>
+                        <p>La aplicación ya está instalada y ejecutándose</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Capturar evento de instalación
+        window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('beforeinstallprompt capturado');
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            const installBtn = document.getElementById('installBtn');
+            installBtn.disabled = false;
+            installBtn.textContent = '📱 ¡Instalar Ahora!';
+            installBtn.style.background = '#4CAF50';
+            
+            document.getElementById('installStatus').innerHTML = `
+                <div class="step success">
+                    <h3>🎉 ¡Listo para instalar!</h3>
+                    <p>La app cumple todos los requisitos PWA</p>
+                </div>
+            `;
+        });
+
+        // Función de instalación
+        async function installApp() {
+            if (!deferredPrompt) {
+                document.getElementById('installStatus').innerHTML = `
+                    <div class="step warning">
+                        <h3>⏳ Esperando...</h3>
+                        <p>El navegador aún no ha detectado que la app es instalable</p>
+                        <p>Espera unos segundos e interactúa con la app</p>
+                    </div>
+                `;
+                return;
+            }
+
+            try {
+                installAttempted = true;
+                deferredPrompt.prompt();
+                
+                const choiceResult = await deferredPrompt.userChoice;
+                
+                if (choiceResult.outcome === 'accepted') {
+                    document.getElementById('installStatus').innerHTML = `
+                        <div class="step success">
+                            <h3>🎉 ¡Instalación exitosa!</h3>
+                            <p>La app se ha instalado correctamente</p>
+                            <p>Búscala en tu pantalla de inicio</p>
+                        </div>
+                    `;
+                } else {
+                    document.getElementById('installStatus').innerHTML = `
+                        <div class="step warning">
+                            <h3>❌ Instalación cancelada</h3>
+                            <p>Puedes intentar instalar más tarde</p>
+                        </div>
+                    `;
+                }
+                
+                deferredPrompt = null;
+                document.getElementById('installBtn').disabled = true;
+            } catch (error) {
+                console.error('Error durante instalación:', error);
+                document.getElementById('installStatus').innerHTML = `
+                    <div class="step warning">
+                        <h3>❌ Error de instalación</h3>
+                        <p>Error: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Copiar URL
+        function copyUrl() {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                alert('URL copiada al portapapeles');
+            }).catch(() => {
+                prompt('Copia esta URL:', window.location.href);
+            });
+        }
+
+        // Test PWA
+        function testPWA() {
+            const results = document.getElementById('testResults');
+            results.classList.remove('hidden');
+            
+            const tests = [
+                { name: 'Service Worker', test: 'serviceWorker' in navigator },
+                { name: 'Manifest', test: document.querySelector('link[rel="manifest"]') !== null },
+                { name: 'HTTPS/Localhost', test: location.protocol === 'https:' || location.hostname === 'localhost' },
+                { name: 'Android', test: /Android/.test(navigator.userAgent) },
+                { name: 'Chrome', test: /Chrome/.test(navigator.userAgent) },
+                { name: 'Standalone', test: window.matchMedia('(display-mode: standalone)').matches }
+            ];
+            
+            let html = '<div class="step"><h3>🧪 Resultados del Test PWA</h3>';
+            tests.forEach(test => {
+                const status = test.test ? '✅' : '❌';
+                html += `<p>${status} ${test.name}</p>`;
+            });
+            html += '</div>';
+            
+            results.innerHTML = html;
+        }
+
+        // Registrar Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js')
+                .then(registration => console.log('SW registrado'))
+                .catch(error => console.error('SW error:', error));
+        }
+
+        // Inicializar
+        window.addEventListener('load', showDeviceInfo);
+
+        // Verificar cada 5 segundos si se puede instalar
+        setInterval(() => {
+            if (!installAttempted && !deferredPrompt) {
+                const installBtn = document.getElementById('installBtn');
+                if (installBtn && !installBtn.disabled) {
+                    installBtn.textContent = '⏳ Esperando detección PWA...';
+                }
+            }
+        }, 5000);
+    </script>
+</body>
+</html>

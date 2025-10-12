@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnóstico Completo PWA - Semáforo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        .test-section {
+            background: rgba(255,255,255,0.1);
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #ccc;
+        }
+        .test-section.pass {
+            border-left-color: #00ff00;
+            background: rgba(0,255,0,0.1);
+        }
+        .test-section.fail {
+            border-left-color: #ff0000;
+            background: rgba(255,0,0,0.1);
+        }
+        .test-section.warning {
+            border-left-color: #ffa500;
+            background: rgba(255,165,0,0.1);
+        }
+        .status {
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+        }
+        .status.pass { background: #00ff00; color: black; }
+        .status.fail { background: #ff0000; color: white; }
+        .status.warning { background: #ffa500; color: black; }
+        button {
+            background: #00ff00;
+            color: black;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px 5px;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #00cc00;
+            transform: translateY(-2px);
+        }
+        .hidden { display: none; }
+        .details {
+            background: rgba(0,0,0,0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+        }
+        .browser-warning {
+            background: rgba(255,165,0,0.3);
+            border: 2px solid #ffa500;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Diagnóstico Completo PWA</h1>
+        
+        <div id="browserWarning" class="browser-warning hidden">
+            <h2>⚠️ ADVERTENCIA: Navegador no recomendado</h2>
+            <p id="browserMessage"></p>
+            <button onclick="window.open('./chrome-install.html', '_blank')">📱 Ver guía para Chrome</button>
+        </div>
+
+        <div class="test-section">
+            <h2>🌐 Información del navegador</h2>
+            <div id="browserInfo" class="details">Detectando...</div>
+        </div>
+
+        <div id="results"></div>
+
+        <div class="test-section">
+            <h2>🔧 Acciones</h2>
+            <button onclick="runDiagnostic()">🔄 Ejecutar diagnóstico</button>
+            <button onclick="window.open('./index.html', '_blank')">🎯 Abrir App Principal</button>
+            <button onclick="window.open('./chrome-install.html', '_blank')">📱 Guía de Instalación</button>
+            <button id="installBtn" onclick="installApp()" class="hidden">📱 Instalar App</button>
+        </div>
+    </div>
+
+    <script>
+        let deferredPrompt;
+        
+        // Capturar evento de instalación
+        window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('beforeinstallprompt capturado');
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installBtn').classList.remove('hidden');
+        });
+
+        function addResult(title, status, details, technical = '') {
+            const resultsDiv = document.getElementById('results');
+            const section = document.createElement('div');
+            section.className = `test-section ${status}`;
+            
+            let statusText = status === 'pass' ? '✅ CORRECTO' : 
+                           status === 'fail' ? '❌ ERROR' : '⚠️ ADVERTENCIA';
+            
+            section.innerHTML = `
+                <h3>${title} <span class="status ${status}">${statusText}</span></h3>
+                <p>${details}</p>
+                ${technical ? `<div class="details">${technical}</div>` : ''}
+            `;
+            resultsDiv.appendChild(section);
+        }
+
+        function detectBrowser() {
+            const userAgent = navigator.userAgent;
+            const browserInfo = document.getElementById('browserInfo');
+            const browserWarning = document.getElementById('browserWarning');
+            const browserMessage = document.getElementById('browserMessage');
+            
+            let browserName = 'Desconocido';
+            let isRecommended = false;
+            let warning = '';
+            
+            if (userAgent.includes('Chrome') && !userAgent.includes('Edg') && !userAgent.includes('OPR')) {
+                if (userAgent.includes('Brave')) {
+                    browserName = 'Brave';
+                    warning = 'Brave tiene problemas conocidos con PWAs. Se recomienda usar Google Chrome.';
+                } else {
+                    browserName = 'Chrome';
+                    isRecommended = true;
+                }
+            } else if (userAgent.includes('Firefox')) {
+                browserName = 'Firefox';
+                warning = 'Firefox tiene soporte limitado para PWAs. Se recomienda usar Google Chrome.';
+            } else if (userAgent.includes('Safari')) {
+                browserName = 'Safari';
+                warning = 'Safari tiene soporte limitado para PWAs. Se recomienda usar Google Chrome.';
+            } else if (userAgent.includes('Edge')) {
+                browserName = 'Edge';
+                warning = 'Edge funciona pero Chrome ofrece mejor soporte para PWAs.';
+            }
+            
+            const info = `Navegador: ${browserName}
+Plataforma: ${navigator.platform}
+User Agent: ${userAgent}
+Pantalla: ${screen.width}x${screen.height}
+Viewport: ${window.innerWidth}x${window.innerHeight}
+Conexión: ${navigator.onLine ? 'Online' : 'Offline'}
+Idioma: ${navigator.language}`;
+            
+            browserInfo.textContent = info;
+            
+            if (!isRecommended && warning) {
+                browserMessage.textContent = warning;
+                browserWarning.classList.remove('hidden');
+            }
+            
+            return { browserName, isRecommended, warning };
+        }
+
+        async function runDiagnostic() {
+            document.getElementById('results').innerHTML = '';
+            
+            const browserInfo = detectBrowser();
+            
+            // Test 1: Navegador recomendado
+            if (browserInfo.isRecommended) {
+                addResult('Navegador', 'pass', 'Estás usando un navegador recomendado para PWAs.');
+            } else {
+                addResult('Navegador', 'warning', 
+                    `Navegador: ${browserInfo.browserName}. ${browserInfo.warning}`);
+            }
+
+            // Test 2: HTTPS/Localhost
+            const isSecure = location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+            if (isSecure) {
+                addResult('Conexión segura', 'pass', 'La aplicación se está ejecutando en un contexto seguro.');
+            } else {
+                addResult('Conexión segura', 'fail', 
+                    'PWAs requieren HTTPS o localhost. Contexto actual: ' + location.protocol);
+            }
+
+            // Test 3: Service Worker
+            if ('serviceWorker' in navigator) {
+                try {
+                    const registration = await navigator.serviceWorker.getRegistration();
+                    if (registration) {
+                        let swStatus = 'Service Worker encontrado';
+                        if (registration.active) {
+                            swStatus += ' y activo';
+                        } else if (registration.installing) {
+                            swStatus += ' (instalándose)';
+                        } else if (registration.waiting) {
+                            swStatus += ' (esperando activación)';
+                        }
+                        
+                        addResult('Service Worker', 'pass', swStatus, 
+                            `Scope: ${registration.scope}\nEstado: ${registration.active ? 'Activo' : 'Inactivo'}`);
+                    } else {
+                        addResult('Service Worker', 'fail', 
+                            'Service Worker no registrado. Visita la página principal primero.',
+                            'Solución: Abre ./index.html y espera unos segundos');
+                    }
+                } catch (error) {
+                    addResult('Service Worker', 'fail', 
+                        'Error al verificar Service Worker: ' + error.message, error.stack);
+                }
+            } else {
+                addResult('Service Worker', 'fail', 'Service Worker no soportado en este navegador.');
+            }
+
+            // Test 4: Manifest
+            try {
+                const response = await fetch('./manifest.json');
+                if (response.ok) {
+                    const manifest = await response.json();
+                    addResult('Web App Manifest', 'pass', 
+                        `Manifest cargado correctamente. App: ${manifest.name}`,
+                        `Nombre: ${manifest.name}\nNombre corto: ${manifest.short_name}\nIconos: ${manifest.icons?.length || 0}\nDisplay: ${manifest.display}`);
+                } else {
+                    addResult('Web App Manifest', 'fail', 
+                        `Error al cargar manifest: ${response.status} ${response.statusText}`);
+                }
+            } catch (error) {
+                addResult('Web App Manifest', 'fail', 
+                    'Error al verificar manifest: ' + error.message, error.stack);
+            }
+
+            // Test 5: Capacidad de instalación
+            if (deferredPrompt) {
+                addResult('Instalabilidad', 'pass', 
+                    'La aplicación puede ser instalada. Botón de instalación disponible.');
+            } else {
+                let reason = 'El navegador no ha detectado que la app sea instalable.';
+                if (browserInfo.browserName === 'Brave') {
+                    reason += ' Brave tiene problemas con PWAs.';
+                } else if (!browserInfo.isRecommended) {
+                    reason += ' Prueba con Google Chrome.';
+                } else {
+                    reason += ' Asegúrate de interactuar con la app principal primero.';
+                }
+                
+                addResult('Instalabilidad', 'warning', reason,
+                    'Solución: 1) Usa Chrome, 2) Visita la app principal, 3) Interactúa con ella, 4) Espera 30-60 segundos');
+            }
+
+            // Test 6: Modo standalone
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+            if (isStandalone) {
+                addResult('Modo PWA', 'pass', 'La aplicación ya está instalada y ejecutándose como PWA.');
+            } else {
+                addResult('Modo PWA', 'warning', 'La aplicación se está ejecutando en el navegador, no como PWA instalada.');
+            }
+
+            // Test 7: Cache API
+            if ('caches' in window) {
+                try {
+                    const cacheNames = await caches.keys();
+                    if (cacheNames.length > 0) {
+                        addResult('Cache API', 'pass', 
+                            `Cache funcionando. ${cacheNames.length} cache(s) encontrado(s).`,
+                            `Caches: ${cacheNames.join(', ')}`);
+                    } else {
+                        addResult('Cache API', 'warning', 
+                            'Cache API disponible pero sin caches. Visita la app principal primero.');
+                    }
+                } catch (error) {
+                    addResult('Cache API', 'fail', 'Error al verificar cache: ' + error.message);
+                }
+            } else {
+                addResult('Cache API', 'fail', 'Cache API no soportada en este navegador.');
+            }
+        }
+
+        async function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`Resultado de instalación: ${outcome}`);
+                deferredPrompt = null;
+                document.getElementById('installBtn').classList.add('hidden');
+                
+                if (outcome === 'accepted') {
+                    addResult('Instalación', 'pass', '¡Aplicación instalada exitosamente!');
+                } else {
+                    addResult('Instalación', 'warning', 'Instalación cancelada por el usuario.');
+                }
+            }
+        }
+
+        // Ejecutar al cargar
+        detectBrowser();
+        runDiagnostic();
+    </script>
+</body>
+</html>

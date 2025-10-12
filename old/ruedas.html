@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Ruedas - Mantenimiento</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        .back-btn {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        .title {
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+        .truck-layout {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            gap: 10px;
+        }
+        .wheel-column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .side-wheels-left {
+            align-items: flex-end;
+        }
+        .side-wheels-right {
+            align-items: flex-start;
+        }
+        .truck-container {
+            flex-shrink: 0;
+        }
+        .truck-image {
+            max-width: 250px;
+            height: auto;
+        }
+        .wheel-unit {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .dual-wheel-container {
+            display: flex;
+            flex-direction: column; /* Apilados verticalmente */
+            gap: 8px;
+        }
+        .wheel-selector {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.5);
+            background-color: rgba(255,255,255,0.2);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .wheel-selector:hover {
+            background-color: rgba(255,255,255,0.4);
+            border-color: white;
+        }
+        .wheel-selector.selected {
+            background-color: #00ff00;
+            border-color: white;
+            box-shadow: 0 0 15px #00ff00;
+        }
+        .km-input {
+            width: 70px;
+            padding: 8px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(0,0,0,0.2);
+            color: white;
+            font-size: 12px;
+            text-align: center;
+        }
+        .km-input::placeholder {
+            color: rgba(255,255,255,0.5);
+        }
+        @media (max-width: 600px) {
+            .truck-layout {
+                flex-direction: column;
+            }
+            .truck-image {
+                max-width: 150px;
+                margin: 20px 0;
+            }
+            .side-wheels-left, .side-wheels-right {
+                align-items: center;
+            }
+        }
+        .tabs {
+            display: flex;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 5px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .tab {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 12px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .tab.active {
+            background: rgba(255,255,255,0.2);
+            font-weight: bold;
+        }
+        .btn {
+            background: #00ff00;
+            color: black;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px; /* Para separarlo de los inputs */
+            display: block; /* Para que ocupe su propia línea */
+            margin-left: auto; /* Para centrarlo si es necesario */
+            margin-right: auto; /* Para centrarlo si es necesario */
+        }
+
+        .btn:hover {
+            background: #00cc00;
+            transform: translateY(-2px);
+        }
+        @media (max-width: 600px) {
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="back-btn" onclick="window.location.href='mantenimiento.html'" title="Volver">←</button>
+            <h1 class="title">Gestión de Ruedas</h1>
+        </div>
+
+        <div class="tabs">
+            <button class="tab" onclick="window.location.href='mantenimiento.html'">📊 Panel</button>
+            <button class="tab" onclick="window.location.href='mantenimiento.html'">🔧 Mantenimiento</button>
+            <button class="tab" onclick="window.location.href='mantenimiento.html'">🚗 Vehículo</button>
+            <button class="tab" onclick="window.location.href='mantenimiento.html'">📋 Historial</button>
+            <button class="tab" onclick="window.location.href='filtros.html'">⚙️ Filtros</button>
+            <button class="tab active" onclick="window.location.href='ruedas.html'">🛞 Ruedas</button>
+        </div>
+
+        <div class="card">
+            <div class="truck-layout">
+                <div class="wheel-column side-wheels-left">
+                    <!-- Ruedas Izquierda -->
+                    <div class="wheel-unit">
+                        <input type="text" class="km-input" id="km-L1" placeholder="km">
+                        <div class="wheel-selector" id="wheel-L1"></div>
+                    </div>
+                    <div class="dual-wheel-container">
+                        <div class="wheel-unit">
+                            <input type="text" class="km-input" id="km-L2a" placeholder="km">
+                            <div class="wheel-selector" id="wheel-L2a"></div>
+                        </div>
+                        <div class="wheel-unit">
+                            <input type="text" class="km-input" id="km-L2b" placeholder="km">
+                            <div class="wheel-selector" id="wheel-L2b"></div>
+                        </div>
+                    </div>
+                    <div class="wheel-unit">
+                        <input type="text" class="km-input" id="km-L3" placeholder="km">
+                        <div class="wheel-selector" id="wheel-L3"></div>
+                    </div>
+                    <div class="wheel-unit">
+                        <input type="text" class="km-input" id="km-L4" placeholder="km">
+                        <div class="wheel-selector" id="wheel-L4"></div>
+                    </div>
+                    <div class="wheel-unit">
+                        <input type="text" class="km-input" id="km-L5" placeholder="km">
+                        <div class="wheel-selector" id="wheel-L5"></div>
+                    </div>
+                </div>
+
+                <div class="truck-container">
+                    <img src="../images/camioncaptura.png" alt="Vista superior del camión" class="truck-image">
+                </div>
+
+                <div class="wheel-column side-wheels-right">
+                    <!-- Ruedas Derecha -->
+                    <div class="wheel-unit">
+                        <div class="wheel-selector" id="wheel-R1"></div>
+                        <input type="text" class="km-input" id="km-R1" placeholder="km">
+                    </div>
+                     <div class="dual-wheel-container">
+                        <div class="wheel-unit">
+                            <div class="wheel-selector" id="wheel-R2a"></div>
+                            <input type="text" class="km-input" id="km-R2a" placeholder="km">
+                        </div>
+                        <div class="wheel-unit">
+                            <div class="wheel-selector" id="wheel-R2b"></div>
+                            <input type="text" class="km-input" id="km-R2b" placeholder="km">
+                        </div>
+                    </div>
+                    <div class="wheel-unit">
+                        <div class="wheel-selector" id="wheel-R3"></div>
+                        <input type="text" class="km-input" id="km-R3" placeholder="km">
+                    </div>
+                    <div class="wheel-unit">
+                        <div class="wheel-selector" id="wheel-R4"></div>
+                        <input type="text" class="km-input" id="km-R4" placeholder="km">
+                    </div>
+                    <div class="wheel-unit">
+                        <div class="wheel-selector" id="wheel-R5"></div>
+                        <input type="text" class="km-input" id="km-R5" placeholder="km">
+                    </div>
+                </div>
+            </div>
+        <button class="btn" onclick="saveAllWheelData()">💾 Guardar Datos</button>
+        </div>
+    </div>
+
+    <script>
+    function saveAllWheelData() {
+        const wheels = document.querySelectorAll('.wheel-selector');
+        const kmInputs = document.querySelectorAll('.km-input');
+
+        wheels.forEach(wheel => {
+            saveSelection(wheel.id, wheel.classList.contains('selected'));
+        });
+
+        kmInputs.forEach(input => {
+            saveKm(input.id, input.value);
+        });
+        alert('✅ Datos de ruedas guardados correctamente!');
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+        const wheels = document.querySelectorAll('.wheel-selector');
+        const kmInputs = document.querySelectorAll('.km-input');
+
+        // Cargar datos guardados
+        function loadData() {
+            // Cargar estado de selección de ruedas
+            wheels.forEach(wheel => {
+                const isSelected = localStorage.getItem(`ruedas_selected_${wheel.id}`);
+                if (isSelected === 'true') {
+                    wheel.classList.add('selected');
+                }
+            });
+
+            // Cargar KM guardados
+            kmInputs.forEach(input => {
+                const savedKm = localStorage.getItem(`ruedas_km_${input.id}`);
+                if (savedKm) {
+                    input.value = savedKm;
+                }
+            });
+        }
+
+        // Guardar estado de selección
+        function saveSelection(id, isSelected) {
+            localStorage.setItem(`ruedas_selected_${id}`, isSelected);
+        }
+
+        // Guardar KM
+        function saveKm(id, value) {
+            localStorage.setItem(`ruedas_km_${id}`, value);
+        });
+
+        // Event listeners para las ruedas
+        wheels.forEach(wheel => {
+            wheel.addEventListener('click', () => {
+                wheel.classList.toggle('selected');
+                saveSelection(wheel.id, wheel.classList.contains('selected'));
+            });
+        });
+
+        // Event listeners para los inputs de KM
+        kmInputs.forEach(input => {
+            input.addEventListener('change', () => {
+                saveKm(input.id, input.value);
+            });
+        });
+
+        // Carga inicial
+        loadData();
+    });
+    </script>
+</body>
+</html>

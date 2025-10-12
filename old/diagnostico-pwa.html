@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnóstico PWA - Semáforo App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-item {
+            background: white;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #ccc;
+        }
+        .test-item.pass {
+            border-left-color: #4CAF50;
+        }
+        .test-item.fail {
+            border-left-color: #f44336;
+        }
+        .test-item.warning {
+            border-left-color: #ff9800;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .status {
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: white;
+        }
+        .status.pass { background: #4CAF50; }
+        .status.fail { background: #f44336; }
+        .status.warning { background: #ff9800; }
+        pre {
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        #installBtn {
+            background: #2196F3;
+        }
+        #installBtn:hover {
+            background: #1976D2;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Diagnóstico PWA - Semáforo App</h1>
+    
+    <div id="tests"></div>
+    
+    <div style="text-align: center; margin: 20px 0;">
+        <button onclick="runTests()">🔄 Ejecutar Tests</button>
+        <button id="installBtn" onclick="installApp()" style="display: none;">📱 Instalar App</button>
+        <button onclick="window.location.href='index.html'">🏠 Volver a la App</button>
+    </div>
+
+    <script>
+        let deferredPrompt;
+        
+        // Capturar el evento de instalación
+        window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('beforeinstallprompt capturado');
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installBtn').style.display = 'inline-block';
+        });
+
+        function addTest(name, status, details) {
+            const testsDiv = document.getElementById('tests');
+            const testDiv = document.createElement('div');
+            testDiv.className = `test-item ${status}`;
+            testDiv.innerHTML = `
+                <h3>${name} <span class="status ${status}">${status.toUpperCase()}</span></h3>
+                <div>${details}</div>
+            `;
+            testsDiv.appendChild(testDiv);
+        }
+
+        async function runTests() {
+            document.getElementById('tests').innerHTML = '';
+            
+            // Test 1: Service Worker
+            if ('serviceWorker' in navigator) {
+                try {
+                    const registration = await navigator.serviceWorker.register('./sw.js');
+                    addTest('Service Worker', 'pass', `Registrado correctamente. Scope: ${registration.scope}`);
+                } catch (error) {
+                    addTest('Service Worker', 'fail', `Error al registrar: ${error.message}`);
+                }
+            } else {
+                addTest('Service Worker', 'fail', 'Service Worker no soportado en este navegador');
+            }
+
+            // Test 2: Manifest
+            try {
+                const response = await fetch('./manifest.json');
+                if (response.ok) {
+                    const manifest = await response.json();
+                    addTest('Manifest', 'pass', `Manifest cargado correctamente. Nombre: ${manifest.name}`);
+                } else {
+                    addTest('Manifest', 'fail', `Error al cargar manifest: ${response.status}`);
+                }
+            } catch (error) {
+                addTest('Manifest', 'fail', `Error al cargar manifest: ${error.message}`);
+            }
+
+            // Test 3: HTTPS
+            if (location.protocol === 'https:' || location.hostname === 'localhost') {
+                addTest('HTTPS', 'pass', `Protocolo seguro: ${location.protocol}`);
+            } else {
+                addTest('HTTPS', 'warning', `Protocolo no seguro: ${location.protocol}. PWA requiere HTTPS en producción.`);
+            }
+
+            // Test 4: Iconos
+            const iconTests = [
+                { size: '192x192', file: 'icon-192.png' },
+                { size: '512x512', file: 'icon-512.png' }
+            ];
+
+            for (const icon of iconTests) {
+                try {
+                    const response = await fetch(`./${icon.file}`);
+                    if (response.ok) {
+                        addTest(`Icono ${icon.size}`, 'pass', `Icono ${icon.file} disponible`);
+                    } else {
+                        addTest(`Icono ${icon.size}`, 'fail', `Icono ${icon.file} no encontrado (${response.status})`);
+                    }
+                } catch (error) {
+                    addTest(`Icono ${icon.size}`, 'fail', `Error al cargar ${icon.file}: ${error.message}`);
+                }
+            }
+
+            // Test 5: beforeinstallprompt
+            if (deferredPrompt) {
+                addTest('Instalación', 'pass', 'Evento beforeinstallprompt capturado. App puede ser instalada.');
+            } else {
+                addTest('Instalación', 'warning', 'Evento beforeinstallprompt no capturado. Puede que ya esté instalada o no cumpla criterios.');
+            }
+
+            // Test 6: Archivos principales
+            const files = ['index.html', 'styles.css', 'script.js'];
+            for (const file of files) {
+                try {
+                    const response = await fetch(`./${file}`);
+                    if (response.ok) {
+                        addTest(`Archivo ${file}`, 'pass', `Archivo disponible (${response.status})`);
+                    } else {
+                        addTest(`Archivo ${file}`, 'fail', `Archivo no encontrado (${response.status})`);
+                    }
+                } catch (error) {
+                    addTest(`Archivo ${file}`, 'fail', `Error al cargar: ${error.message}`);
+                }
+            }
+
+            // Test 7: Información del navegador
+            const userAgent = navigator.userAgent;
+            const isChrome = /Chrome/.test(userAgent);
+            const isFirefox = /Firefox/.test(userAgent);
+            const isSafari = /Safari/.test(userAgent) && !/Chrome/.test(userAgent);
+            const isEdge = /Edge/.test(userAgent);
+
+            let browserSupport = 'unknown';
+            if (isChrome) browserSupport = 'Excelente soporte PWA';
+            else if (isFirefox) browserSupport = 'Buen soporte PWA';
+            else if (isSafari) browserSupport = 'Soporte PWA limitado';
+            else if (isEdge) browserSupport = 'Buen soporte PWA';
+
+            addTest('Navegador', 'pass', `${browserSupport}<br><small>${userAgent}</small>`);
+        }
+
+        async function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const choiceResult = await deferredPrompt.userChoice;
+                if (choiceResult.outcome === 'accepted') {
+                    addTest('Instalación', 'pass', 'App instalada correctamente');
+                } else {
+                    addTest('Instalación', 'warning', 'Instalación cancelada por el usuario');
+                }
+                deferredPrompt = null;
+                document.getElementById('installBtn').style.display = 'none';
+            }
+        }
+
+        // Ejecutar tests al cargar
+        window.addEventListener('load', runTests);
+    </script>
+</body>
+</html>

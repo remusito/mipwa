@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mantenimiento del Vehículo - Semáforo App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .back-btn {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-50%) translateY(-2px);
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.8;
+        }
+
+        .tabs {
+            display: flex;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 5px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .tab {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 12px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .tab.active {
+            background: rgba(255,255,255,0.2);
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-ok { background: #00ff00; }
+        .status-warning { background: #ffff00; }
+        .status-critical { background: #ff0000; }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-row.single {
+            grid-template-columns: 1fr;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            font-size: 16px;
+            backdrop-filter: blur(10px);
+        }
+
+        input::placeholder, textarea::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            background: rgba(255,255,255,0.3);
+        }
+
+        .btn {
+            background: #00ff00;
+            color: black;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-right: 10px;
+        }
+
+        .btn:hover {
+            background: #00cc00;
+            transform: translateY(-2px);
+        }
+
+        .btn.secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        .btn.secondary:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .btn.danger {
+            background: #ff4444;
+            color: white;
+        }
+
+        .btn.danger:hover {
+            background: #cc0000;
+        }
+
+        .maintenance-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .maintenance-info {
+            flex: 1;
+        }
+
+        .maintenance-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .maintenance-details {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .maintenance-status {
+            text-align: right;
+        }
+
+        .km-remaining {
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .next-service {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .alert {
+            background: rgba(255,165,0,0.3);
+            border: 1px solid rgba(255,165,0,0.5);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .alert.critical {
+            background: rgba(255,0,0,0.3);
+            border-color: rgba(255,0,0,0.5);
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .history-date {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                margin-bottom: 5px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        #barcodeScannerCanvas {
+            display: none; /* Hidden by default, used for processing video frames */
+        }
+    </style>
+    <script type="text/javascript" src="https://unpkg.com/@zxing/library@latest"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="back-btn" onclick="window.close()" title="Volver">←</button>
+            <h1 class="title">🔧 Mantenimiento del Vehículo</h1>
+            <p class="subtitle">Gestiona el mantenimiento de tu vehículo</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('dashboard', event)">📊 Panel</button>
+            <button class="tab" onclick="showTab('maintenance', event)">🔧 Mantenimiento</button>
+            <button class="tab" onclick="showTab('vehicle', event)">🚗 Vehículo</button>
+            <button class="tab" onclick="showTab('history', event)">📋 Historial</button>
+            <button class="tab" onclick="window.location.href='filtros.html'">⚙️ Filtros</button>
+            <button class="tab" onclick="window.location.href='ruedas.html'">🛞 Ruedas</button>
+            <button class="tab" onclick="showTab('repostajes', event)">⛽ Repostajes</button>
+        </div>
+
+        <!-- Panel Principal -->
+        <div id="dashboard" class="tab-content active">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">🚗 Selector de Vehículo</h3>
+                    <button class="btn secondary" onclick="showAddVehicleForm()">➕ Nuevo Vehículo</button>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Vehículo Activo</label>
+                        <select id="vehicleSelector" onchange="switchVehicle()">
+                            <option value="">Seleccionar vehículo...</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; align-items: end;">
+                        <button class="btn danger" onclick="deleteCurrentVehicle()">🗑️ Eliminar Vehículo</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="vehicleStats" style="display: none;">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="currentKm">0</div>
+                        <div class="stat-label">Kilómetros Actuales</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="nextService">-</div>
+                        <div class="stat-label">Próximo Servicio</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalServices">0</div>
+                        <div class="stat-label">Servicios Realizados</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="lastService">-</div>
+                        <div class="stat-label">Último Servicio</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulario para nuevo vehículo -->
+            <div id="newVehicleForm" class="card" style="display: none;">
+                <div class="card-header">
+                    <h3 class="card-title">➕ Nuevo Vehículo</h3>
+                    <button class="btn secondary" onclick="hideAddVehicleForm()">✖️ Cancelar</button>
+                </div>
+                <form id="quickVehicleForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Marca</label>
+                            <input type="text" id="newVehicleBrand" placeholder="Ej: Toyota" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Modelo</label>
+                            <input type="text" id="newVehicleModel" placeholder="Ej: Corolla" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Matrícula</label>
+                            <input type="text" id="newVehiclePlate" placeholder="Ej: 1234ABC" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Kilómetros Actuales</label>
+                            <input type="number" id="newVehicleKm" placeholder="Ej: 50000" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn">💾 Crear Vehículo</button>
+                </form>
+            </div>
+
+            <div id="alerts"></div>
+
+            <div id="maintenanceCard" class="card" style="display: none;">
+                <div class="card-header">
+                    <h3 class="card-title">🔧 Estado del Mantenimiento</h3>
+                    <button class="btn secondary" onclick="updateKilometers()">📊 Actualizar KM</button>
+                </div>
+                <div id="maintenanceStatus"></div>
+            </div>
+        </div>
+
+        <!-- Mantenimiento -->
+        <div id="maintenance" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">➕ Registrar Mantenimiento</h3>
+                </div>
+                <form id="maintenanceForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Tipo de Mantenimiento</label>
+                            <select id="maintenanceType" required>
+                                <option value="">Seleccionar...</option>
+                                <option value="aceite">🛢️ Cambio de Aceite</option>
+                                <option value="filtros">🔧 Cambio de Filtros</option>
+                                <option value="ruedas">🛞 Cambio de Ruedas</option>
+                                <option value="frenos">🛑 Frenos</option>
+                                <option value="engrase">⚙️ Engrase General</option>
+                                <option value="revision">🔍 Revisión General</option>
+                                <option value="itv">📋 ITV</option>
+                                <option value="seguro">🛡️ Seguro</option>
+                                <option value="otro">🔧 Otro</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Kilómetros Actuales</label>
+                            <input type="number" id="currentKilometers" placeholder="Ej: 45000" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Fecha</label>
+                            <input type="date" id="maintenanceDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Taller/Lugar</label>
+                            <input type="text" id="workshop" placeholder="Ej: Taller García">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Próximo Mantenimiento (KM)</label>
+                            <input type="number" id="nextMaintenanceKm" placeholder="Ej: 50000">
+                        </div>
+                        <div class="form-group">
+                            <label>Coste</label>
+                            <input type="number" id="maintenanceCost" placeholder="Ej: 150.50">
+                        </div>
+                    </div>
+                    <div class="form-row single">
+                        <div class="form-group">
+                            <label>Notas</label>
+                            <textarea id="maintenanceNotes" rows="3" placeholder="Detalles adicionales..."></textarea>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn">💾 Guardar Mantenimiento</button>
+                    <button type="button" class="btn secondary" onclick="clearForm()">🗑️ Limpiar</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Vehículo -->
+        <div id="vehicle" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">🚗 Datos del Vehículo</h3>
+                </div>
+                <form id="vehicleForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Marca</label>
+                            <input type="text" id="vehicleBrand" placeholder="Ej: Toyota">
+                        </div>
+                        <div class="form-group">
+                            <label>Modelo</label>
+                            <input type="text" id="vehicleModel" placeholder="Ej: Corolla">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Año</label>
+                            <input type="number" id="vehicleYear" placeholder="Ej: 2020">
+                        </div>
+                        <div class="form-group">
+                            <label>Matrícula</label>
+                            <input type="text" id="vehiclePlate" placeholder="Ej: 1234ABC">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Combustible</label>
+                            <select id="vehicleFuel">
+                                <option value="">Seleccionar...</option>
+                                <option value="gasolina">⛽ Gasolina</option>
+                                <option value="diesel">🛢️ Diésel</option>
+                                <option value="hibrido">🔋 Híbrido</option>
+                                <option value="electrico">⚡ Eléctrico</option>
+                                <option value="glp">🔥 GLP</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Kilómetros Iniciales</label>
+                            <input type="number" id="initialKm" placeholder="KM al comprar">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn">💾 Guardar Vehículo</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">⚙️ Configuración de Mantenimiento</h3>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Intervalo Aceite (KM)</label>
+                        <input type="number" id="oilInterval" value="10000" placeholder="10000">
+                    </div>
+                    <div class="form-group">
+                        <label>Intervalo Filtros (KM)</label>
+                        <input type="number" id="filterInterval" value="20000" placeholder="20000">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Intervalo Ruedas (KM)</label>
+                        <input type="number" id="tireInterval" value="40000" placeholder="40000">
+                    </div>
+                    <div class="form-group">
+                        <label>Intervalo Revisión (KM)</label>
+                        <input type="number" id="serviceInterval" value="15000" placeholder="15000">
+                    </div>
+                </div>
+                <button class="btn" onclick="saveIntervals()">💾 Guardar Intervalos</button>
+            </div>
+        </div>
+
+        <!-- Historial -->
+        <div id="history" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">📋 Historial de Mantenimiento</h3>
+                    <button class="btn danger" onclick="clearHistory()">🗑️ Limpiar Historial</button>
+                </div>
+                <div id="maintenanceHistory"></div>
+            </div>
+        </div>
+
+        <!-- Repostajes -->
+        <div id="repostajes" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">⛽ Gestión de Tarjetas de Repostaje</h3>
+                </div>
+                <div class="form-group">
+                    <label>Tarjetas Guardadas</label>
+                    <select id="fuelCardSelector">
+                        <option value="">Seleccionar tarjeta...</option>
+                    </select>
+                </div>
+                <div class="card-header" style="margin-top: 20px;">
+                    <h3 class="card-title">➕ Añadir Nueva Tarjeta</h3>
+                </div>
+                <form id="addFuelCardForm">
+                    <div class="form-group">
+                        <label>Nombre de la Tarjeta</label>
+                        <input type="text" id="fuelCardName" placeholder="Ej: Repsol Más" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Código de Barras (Manual)</label>
+                        <input type="text" id="fuelCardBarcodeManual" placeholder="Introduce el código de barras" required>
+                    </div>
+                    <button type="submit" class="btn">💾 Guardar Tarjeta</button>
+                </form>
+
+                <div class="card-header" style="margin-top: 20px;">
+                    <h3 class="card-title">📸 Escanear Tarjeta</h3>
+                </div>
+                <button class="btn" onclick="startBarcodeScanner()">Iniciar Escáner</button>
+                <video id="barcodeScannerVideo" style="width: 100%; max-width: 400px; display: none; margin-top: 10px; border-radius: 10px;"></video>
+                <canvas id="barcodeScannerCanvas" style="display: none;"></canvas>
+                <div id="barcodeScanResult" style="margin-top: 10px; font-weight: bold;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Datos de múltiples vehículos y mantenimiento
+        let vehicles = JSON.parse(localStorage.getItem('vehicles')) || {};
+        let currentVehicleId = localStorage.getItem('currentVehicleId') || null;
+        let maintenanceHistory = JSON.parse(localStorage.getItem('maintenanceHistory')) || {};
+        let maintenanceIntervals = JSON.parse(localStorage.getItem('maintenanceIntervals')) || {
+            aceite: 10000,
+            filtros: 20000,
+            ruedas: 40000,
+            revision: 15000,
+            frenos: 30000,
+            engrase: 5000
+        };
+
+        // Inicializar la aplicación
+        document.addEventListener('DOMContentLoaded', () => {
+            loadVehicleSelector();
+            loadMaintenanceIntervals();
+            
+            // Establecer fecha actual por defecto
+            document.getElementById('maintenanceDate').value = new Date().toISOString().split('T')[0];
+            
+            // Si hay un vehículo seleccionado, cargarlo
+            if (currentVehicleId && vehicles[currentVehicleId]) {
+                document.getElementById('vehicleSelector').value = currentVehicleId;
+                switchVehicle();
+            }
+        });
+
+        // --- Funciones para Repostajes ---
+        let fuelCards = JSON.parse(localStorage.getItem('fuelCards')) || [];
+        let barcodeScannerStream = null; // Para guardar el stream de la cámara
+
+        // Cargar selector de tarjetas de repostaje
+        function loadFuelCardSelector() {
+            const selector = document.getElementById('fuelCardSelector');
+            selector.innerHTML = '<option value="">Seleccionar tarjeta...</option>';
+            fuelCards.forEach((card, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = `${card.name} (${card.barcode})`;
+                selector.appendChild(option);
+            });
+        }
+
+        // Guardar nueva tarjeta de repostaje (manual)
+        document.getElementById('addFuelCardForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('fuelCardName').value;
+            const barcode = document.getElementById('fuelCardBarcodeManual').value;
+
+            if (name && barcode) {
+                fuelCards.push({ name, barcode });
+                localStorage.setItem('fuelCards', JSON.stringify(fuelCards));
+                loadFuelCardSelector();
+                document.getElementById('addFuelCardForm').reset();
+                alert('✅ Tarjeta de repostaje guardada correctamente');
+            } else {
+                alert('❌ Por favor, introduce el nombre y el código de barras.');
+            }
+        });
+
+        // Iniciar escáner de código de barras
+        async function startBarcodeScanner() {
+            const video = document.getElementById('barcodeScannerVideo');
+            const resultDiv = document.getElementById('barcodeScanResult');
+            const canvas = document.getElementById('barcodeScannerCanvas');
+            const context = canvas.getContext('2d');
+
+            resultDiv.textContent = 'Iniciando escáner...';
+            video.style.display = 'block';
+
+            try {
+                barcodeScannerStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                video.srcObject = barcodeScannerStream;
+                await video.play();
+
+                // Configurar canvas para el mismo tamaño que el video
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+
+                // Aquí se integraría la lógica de escaneo de códigos de barras con una librería como zxing-js/library
+                // Por ejemplo:
+                const codeReader = new ZXing.BrowserMultiFormatReader();
+                codeReader.decodeFromVideo(video, 'barcodeScanResult', (result, err) => {
+                    if (result) {
+                        resultDiv.textContent = `Código detectado: ${result.text}`;
+                        document.getElementById('fuelCardBarcodeManual').value = result.text; // Rellenar campo manual
+                        stopBarcodeScanner();
+                    }
+                    if (err && !(err instanceof ZXing.NotFoundException)) {
+                        console.error(err);
+                        resultDiv.textContent = 'Error al escanear.';
+                    }
+                });
+
+                resultDiv.textContent = 'Escáner iniciado. Apunta la cámara al código de barras.';
+                // Placeholder: En un entorno real, aquí se procesarían los frames del video
+                // para detectar el código de barras.
+                // Por ahora, solo mostramos el video.
+            } catch (err) {
+                console.error('Error al acceder a la cámara:', err);
+                resultDiv.textContent = '❌ No se pudo acceder a la cámara. Asegúrate de dar permisos.';
+                video.style.display = 'none';
+            }
+        }
+
+        // Detener escáner de código de barras
+        function stopBarcodeScanner() {
+            const video = document.getElementById('barcodeScannerVideo');
+            if (barcodeScannerStream) {
+                barcodeScannerStream.getTracks().forEach(track => track.stop());
+                video.srcObject = null;
+                barcodeScannerStream = null;
+            }
+            video.style.display = 'none';
+            document.getElementById('barcodeScanResult').textContent = '';
+        }
+
+        // Gestión de pestañas
+        function showTab(tabName, event) {
+            // Ocultar todas las pestañas
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Mostrar pestaña seleccionada
+            document.getElementById(tabName).classList.add('active');
+            if (event) {
+                event.target.classList.add('active');
+            }
+
+            if (tabName !== 'repostajes') {
+                stopBarcodeScanner();
+            } else {
+                loadFuelCardSelector(); // Cargar las tarjetas al entrar en la pestaña de repostajes
+            }
+        }
+
+        // Cargar selector de vehículos
+        function loadVehicleSelector() {
+            const selector = document.getElementById('vehicleSelector');
+            selector.innerHTML = '<option value="">Seleccionar vehículo...</option>';
+            
+            Object.keys(vehicles).forEach(vehicleId => {
+                const vehicle = vehicles[vehicleId];
+                const option = document.createElement('option');
+                option.value = vehicleId;
+                option.textContent = `${vehicle.brand} ${vehicle.model} (${vehicle.plate})`;
+                selector.appendChild(option);
+            });
+        }
+
+        // Mostrar formulario de nuevo vehículo
+        function showAddVehicleForm() {
+            document.getElementById('newVehicleForm').style.display = 'block';
+            document.getElementById('vehicleStats').style.display = 'none';
+            document.getElementById('maintenanceCard').style.display = 'none';
+        }
+
+        // Ocultar formulario de nuevo vehículo
+        function hideAddVehicleForm() {
+            document.getElementById('newVehicleForm').style.display = 'none';
+            document.getElementById('quickVehicleForm').reset();
+        }
+
+        // Crear nuevo vehículo
+        document.getElementById('quickVehicleForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const vehicleId = Date.now().toString();
+            const newVehicle = {
+                id: vehicleId,
+                brand: document.getElementById('newVehicleBrand').value,
+                model: document.getElementById('newVehicleModel').value,
+                plate: document.getElementById('newVehiclePlate').value.toUpperCase(),
+                currentKm: parseInt(document.getElementById('newVehicleKm').value),
+                createdDate: new Date().toISOString()
+            };
+            
+            vehicles[vehicleId] = newVehicle;
+            maintenanceHistory[vehicleId] = [];
+            
+            localStorage.setItem('vehicles', JSON.stringify(vehicles));
+            localStorage.setItem('maintenanceHistory', JSON.stringify(maintenanceHistory));
+            
+            loadVehicleSelector();
+            document.getElementById('vehicleSelector').value = vehicleId;
+            currentVehicleId = vehicleId;
+            localStorage.setItem('currentVehicleId', currentVehicleId);
+            
+            hideAddVehicleForm();
+            switchVehicle();
+            
+            alert('✅ Vehículo creado correctamente');
+        });
+
+        // Cambiar vehículo activo
+        function switchVehicle() {
+            const vehicleId = document.getElementById('vehicleSelector').value;
+            
+            if (!vehicleId) {
+                document.getElementById('vehicleStats').style.display = 'none';
+                document.getElementById('maintenanceCard').style.display = 'none';
+                return;
+            }
+            
+            currentVehicleId = vehicleId;
+            localStorage.setItem('currentVehicleId', currentVehicleId);
+            
+            document.getElementById('vehicleStats').style.display = 'block';
+            document.getElementById('maintenanceCard').style.display = 'block';
+            document.getElementById('newVehicleForm').style.display = 'none';
+            
+            loadVehicleData();
+            updateDashboard();
+            updateMaintenanceStatus();
+            updateHistory();
+        }
+
+        // Eliminar vehículo actual
+        function deleteCurrentVehicle() {
+            if (!currentVehicleId) {
+                alert('❌ No hay vehículo seleccionado');
+                return;
+            }
+            
+            const vehicle = vehicles[currentVehicleId];
+            const confirmMsg = `¿Estás seguro de que quieres eliminar el vehículo ${vehicle.brand} ${vehicle.model} (${vehicle.plate})?\n\nEsto eliminará también todo su historial de mantenimiento.`;
+            
+            if (confirm(confirmMsg)) {
+                delete vehicles[currentVehicleId];
+                delete maintenanceHistory[currentVehicleId];
+                
+                localStorage.setItem('vehicles', JSON.stringify(vehicles));
+                localStorage.setItem('maintenanceHistory', JSON.stringify(maintenanceHistory));
+                localStorage.removeItem('currentVehicleId');
+                
+                currentVehicleId = null;
+                loadVehicleSelector();
+                document.getElementById('vehicleSelector').value = '';
+                document.getElementById('vehicleStats').style.display = 'none';
+                document.getElementById('maintenanceCard').style.display = 'none';
+                
+                alert('✅ Vehículo eliminado correctamente');
+            }
+        }
+
+        // Cargar datos del vehículo actual
+        function loadVehicleData() {
+            if (!currentVehicleId || !vehicles[currentVehicleId]) return;
+            
+            const vehicle = vehicles[currentVehicleId];
+            document.getElementById('vehicleBrand').value = vehicle.brand || '';
+            document.getElementById('vehicleModel').value = vehicle.model || '';
+            document.getElementById('vehicleYear').value = vehicle.year || '';
+            document.getElementById('vehiclePlate').value = vehicle.plate || '';
+            document.getElementById('vehicleFuel').value = vehicle.fuel || '';
+            document.getElementById('initialKm').value = vehicle.initialKm || '';
+        }
+
+        // Cargar intervalos de mantenimiento
+        function loadMaintenanceIntervals() {
+            document.getElementById('oilInterval').value = maintenanceIntervals.aceite || 10000;
+            document.getElementById('filterInterval').value = maintenanceIntervals.filtros || 20000;
+            document.getElementById('tireInterval').value = maintenanceIntervals.ruedas || 40000;
+            document.getElementById('serviceInterval').value = maintenanceIntervals.revision || 15000;
+        }
+
+        // Guardar datos del vehículo
+        document.getElementById('vehicleForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            if (!currentVehicleId) {
+                alert('❌ No hay vehículo seleccionado');
+                return;
+            }
+
+            const vehicleData = {
+                brand: document.getElementById('vehicleBrand').value,
+                model: document.getElementById('vehicleModel').value,
+                year: document.getElementById('vehicleYear').value,
+                plate: document.getElementById('vehiclePlate').value,
+                fuel: document.getElementById('vehicleFuel').value,
+                initialKm: parseInt(document.getElementById('initialKm').value) || 0
+            };
+            
+            vehicles[currentVehicleId] = {...vehicles[currentVehicleId], ...vehicleData};
+            localStorage.setItem('vehicles', JSON.stringify(vehicles));
+            alert('✅ Datos del vehículo guardados correctamente');
+            updateDashboard();
+        });
+
+        // Guardar intervalos
+        function saveIntervals() {
+            maintenanceIntervals = {
+                aceite: parseInt(document.getElementById('oilInterval').value) || 10000,
+                filtros: parseInt(document.getElementById('filterInterval').value) || 20000,
+                ruedas: parseInt(document.getElementById('tireInterval').value) || 40000,
+                revision: parseInt(document.getElementById('serviceInterval').value) || 15000,
+                frenos: 30000,
+                engrase: 5000
+            };
+            
+            localStorage.setItem('maintenanceIntervals', JSON.stringify(maintenanceIntervals));
+            alert('✅ Intervalos guardados correctamente');
+            updateMaintenanceStatus();
+        }
+
+        // Guardar mantenimiento
+        document.getElementById('maintenanceForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            if (!currentVehicleId) {
+                alert('❌ Debes seleccionar un vehículo primero');
+                return;
+            }
+            
+            const maintenance = {
+                id: Date.now(),
+                vehicleId: currentVehicleId,
+                type: document.getElementById('maintenanceType').value,
+                kilometers: parseInt(document.getElementById('currentKilometers').value),
+                date: document.getElementById('maintenanceDate').value,
+                nextKm: parseInt(document.getElementById('nextMaintenanceKm').value) || null,
+                workshop: document.getElementById('workshop').value,
+                notes: document.getElementById('maintenanceNotes').value,
+                cost: parseFloat(document.getElementById('maintenanceCost').value) || 0
+            };
+            
+            if (!maintenanceHistory[currentVehicleId]) {
+                maintenanceHistory[currentVehicleId] = [];
+            }
+            
+            maintenanceHistory[currentVehicleId].push(maintenance);
+            maintenanceHistory[currentVehicleId].sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            // Actualizar kilómetros del vehículo
+            vehicles[currentVehicleId].currentKm = maintenance.kilometers;
+            
+            localStorage.setItem('maintenanceHistory', JSON.stringify(maintenanceHistory));
+            localStorage.setItem('vehicles', JSON.stringify(vehicles));
+            
+            alert('✅ Mantenimiento registrado correctamente');
+            clearForm();
+            updateDashboard();
+            updateMaintenanceStatus();
+            updateHistory();
+        });
+
+        // Limpiar formulario
+        function clearForm() {
+            document.getElementById('maintenanceForm').reset();
+            document.getElementById('maintenanceDate').value = new Date().toISOString().split('T')[0];
+        }
+
+        // Actualizar kilómetros
+        function updateKilometers() {
+            if (!currentVehicleId) {
+                alert('❌ No hay vehículo seleccionado');
+                return;
+            }
+            const km = prompt('Introduce los kilómetros actuales:');
+            if (km && !isNaN(km)) {
+                vehicles[currentVehicleId].currentKm = parseInt(km);
+                localStorage.setItem('vehicles', JSON.stringify(vehicles));
+                updateDashboard();
+                updateMaintenanceStatus();
+            }
+        }
+
+        // Actualizar dashboard
+        function updateDashboard() {
+            if (!currentVehicleId || !vehicles[currentVehicleId]) return;
+            
+            const currentKm = getCurrentKilometers();
+            document.getElementById('currentKm').textContent = currentKm.toLocaleString();
+            
+            // Próximo servicio
+            const nextService = getNextService();
+            document.getElementById('nextService').textContent = nextService ? `${nextService.km.toLocaleString()} km` : '-';
+            
+            // Total de servicios realizados
+            const vehicleHistory = maintenanceHistory[currentVehicleId] || [];
+            document.getElementById('totalServices').textContent = vehicleHistory.length;
+            
+            // Último servicio
+            if (vehicleHistory.length > 0) {
+                const lastService = vehicleHistory[0]; // Ya está ordenado por fecha desc
+                const lastDate = new Date(lastService.date).toLocaleDateString();
+                document.getElementById('lastService').textContent = lastDate;
+            } else {
+                document.getElementById('lastService').textContent = '-';
+            }
+            
+            // Alertas
+            updateAlerts();
+        }
+
+        // Obtener kilómetros actuales
+        function getCurrentKilometers() {
+            if (!currentVehicleId || !vehicles[currentVehicleId]) return 0;
+            return vehicles[currentVehicleId].currentKm || 0;
+        }
+
+        // Obtener próximo servicio
+        function getNextService() {
+            if (!currentVehicleId || !vehicles[currentVehicleId]) return null;
+            
+            const currentKm = getCurrentKilometers();
+            const vehicleHistory = maintenanceHistory[currentVehicleId] || [];
+            let nextServices = [];
+            
+            Object.keys(maintenanceIntervals).forEach(type => {
+                const lastMaintenance = vehicleHistory.find(m => m.type === type);
+                const lastKm = lastMaintenance ? lastMaintenance.kilometers : (vehicles[currentVehicleId].initialKm || 0);
+                const nextKm = lastKm + maintenanceIntervals[type];
+                
+                if (nextKm > currentKm) {
+                    nextServices.push({ type, km: nextKm });
+                }
+            });
+            
+            return nextServices.sort((a, b) => a.km - b.km)[0];
+        }
+
+        // Actualizar alertas
+        function updateAlerts() {
+            const alertsDiv = document.getElementById('alerts');
+            alertsDiv.innerHTML = '';
+            
+            if (!currentVehicleId || !vehicles[currentVehicleId]) return;
+            
+            const currentKm = getCurrentKilometers();
+            const vehicleHistory = maintenanceHistory[currentVehicleId] || [];
+            const alerts = [];
+            
+            Object.keys(maintenanceIntervals).forEach(type => {
+                const lastMaintenance = vehicleHistory.find(m => m.type === type);
+                const lastKm = lastMaintenance ? lastMaintenance.kilometers : (vehicles[currentVehicleId].initialKm || 0);
+                const nextKm = lastKm + maintenanceIntervals[type];
+                const remaining = nextKm - currentKm;
+                
+                if (remaining <= 0) {
+                    alerts.push({
+                        type: 'critical',
+                        message: `🚨 ${getMaintenanceName(type)} vencido (${Math.abs(remaining).toLocaleString()} km de retraso)`
+                    });
+                } else if (remaining <= 1000) {
+                    alerts.push({
+                        type: 'warning',
+                        message: `⚠️ ${getMaintenanceName(type)} próximo (${remaining.toLocaleString()} km restantes)`
+                    });
+                }
+            });
+            
+            alerts.forEach(alert => {
+                const alertDiv = document.createElement('div');
+                alertDiv.className = `alert ${alert.type}`;
+                alertDiv.textContent = alert.message;
+                alertsDiv.appendChild(alertDiv);
+            });
+        }
+
+        // Actualizar estado de mantenimiento
+        function updateMaintenanceStatus() {
+            const statusDiv = document.getElementById('maintenanceStatus');
+            statusDiv.innerHTML = '';
+            
+            if (!currentVehicleId || !vehicles[currentVehicleId]) return;
+
+            const currentKm = getCurrentKilometers();
+            const vehicleHistory = maintenanceHistory[currentVehicleId] || [];
+            
+            Object.keys(maintenanceIntervals).forEach(type => {
+                const lastMaintenance = vehicleHistory.find(m => m.type === type);
+                const lastKm = lastMaintenance ? lastMaintenance.kilometers : (vehicles[currentVehicleId].initialKm || 0);
+                const nextKm = lastKm + maintenanceIntervals[type];
+                const remaining = nextKm - currentKm;
+                
+                let status = 'ok';
+                if (remaining <= 0) status = 'critical';
+                else if (remaining <= 1000) status = 'warning';
+                
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'maintenance-item';
+                itemDiv.innerHTML = `
+                    <div class="maintenance-info">
+                        <div class="maintenance-name">
+                            <span class="status-indicator status-${status}"></span>
+                            ${getMaintenanceName(type)}
+                        </div>
+                        <div class="maintenance-details">
+                            Último: ${lastKm.toLocaleString()} km
+                            ${lastMaintenance ? ` (${new Date(lastMaintenance.date).toLocaleDateString()})` : ''}
+                        </div>
+                    </div>
+                    <div class="maintenance-status">
+                        <div class="km-remaining">${remaining > 0 ? remaining.toLocaleString() : 'VENCIDO'} km</div>
+                        <div class="next-service">Próximo: ${nextKm.toLocaleString()} km</div>
+                    </div>
+                `;
+                statusDiv.appendChild(itemDiv);
+            });
+        }
+
+        // Actualizar historial
+        function updateHistory() {
+            const historyDiv = document.getElementById('maintenanceHistory');
+            historyDiv.innerHTML = '';
+            
+            if (!currentVehicleId || !maintenanceHistory[currentVehicleId] || maintenanceHistory[currentVehicleId].length === 0) {
+                historyDiv.innerHTML = '<p style="text-align: center; opacity: 0.7;">No hay registros de mantenimiento</p>';
+                return;
+            }
+            
+            maintenanceHistory[currentVehicleId].forEach(maintenance => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'history-item';
+                itemDiv.innerHTML = `
+                    <div>
+                        <div style="font-weight: bold;">${getMaintenanceName(maintenance.type)}</div>
+                        <div style="font-size: 12px; opacity: 0.7;">
+                            ${maintenance.kilometers.toLocaleString()} km • ${maintenance.cost.toFixed(2)}€
+                            ${maintenance.workshop ? ` • ${maintenance.workshop}` : ''}
+                        </div>
+                        ${maintenance.notes ? `<div style="font-size: 11px; opacity: 0.6; margin-top: 2px;">${maintenance.notes}</div>` : ''}
+                    </div>
+                    <div class="history-date">${new Date(maintenance.date).toLocaleDateString()}</div>
+                `;
+                historyDiv.appendChild(itemDiv);
+            });
+        }
+
+        // Obtener nombre del mantenimiento
+        function getMaintenanceName(type) {
+            const names = {
+                aceite: '🛢️ Cambio de Aceite',
+                filtros: '🔧 Cambio de Filtros',
+                ruedas: '🛞 Cambio de Ruedas',
+                frenos: '🛑 Frenos',
+                engrase: '⚙️ Engrase General',
+                revision: '🔍 Revisión General',
+                itv: '📋 ITV',
+                seguro: '🛡️ Seguro',
+                otro: '🔧 Otro'
+            };
+            return names[type] || type;
+        }
+
+        // Limpiar historial
+        function clearHistory() {
+            if (!currentVehicleId) {
+                alert('❌ No hay vehículo seleccionado');
+                return;
+            }
+            if (confirm('¿Estás seguro de que quieres eliminar todo el historial de mantenimiento para este vehículo?')) {
+                maintenanceHistory[currentVehicleId] = [];
+                localStorage.setItem('maintenanceHistory', JSON.stringify(maintenanceHistory));
+                updateDashboard();
+                updateMaintenanceStatus();
+                updateHistory();
+                alert('✅ Historial eliminado correctamente');
+            }
+        }
+    </script>
+</body>
+</html>
